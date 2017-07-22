@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "express": "*",
-    "pug": "*",
-    "mongodb": "*"
+    "mongodb": "*",
+    "client-sessions": "*"
   }
 }

@@ -52,4 +52,16 @@ Wrapper.prototype.get = function(name, id, callback)
 		}
 	});
 }
+Wrapper.prototype.save = function(name, obj, callback)
+{
+	this.getCollection(name, function(error, collection)
+	{
+		if (error) callback(error);
+		else
+		{
+			obj.creationTime = new Date();
+			collection.insert(obj, function() { callback(null, obj); });
+		}
+	});
+}
 exports.Wrapper = Wrapper;
