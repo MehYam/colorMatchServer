@@ -22,7 +22,7 @@ app.use(session(
 }));
 
 var mongoWrapper;
-MongoClient.connect('mongodb://localhost:27017/mongo-server', function(error, db)
+MongoClient.connect('mongodb://localhost:27017/cm1', function(error, db)
 {
 	if (error)
 	{
@@ -37,10 +37,35 @@ app.get('/', function(request, response)
 	response.send("<html><body><h1>Reached the root responder</h1></body></html>");
 });
 
-//KAI: add a bunch of methods where we just parse the arguments and console them out
-
-// AddUser(...)
-app.get('/addUser/:userName', function(request, response)
+app.get('/getUsers', function(request, response)
+{
+	mongoWrapper.findAll('users', function(error, results)
+	{
+		if (error)
+		{
+			response.send("MongoDB error: " + error);
+		}
+		else
+		{
+			response.send(results);
+		}
+	});
+});
+app.get('/getUser', function(request, response)
+{
+	mongoWrapper.findAll('users', function(error, results)
+	{
+		if (error)
+		{
+			response.send("MongoDB error: " + error);
+		}
+		else
+		{
+			response.send(results);
+		}
+	});
+});
+app.get('/addUser/:userName/:firstName/:lastName', function(request, response)
 {
 	response.send("<html><body><h1>addUser " + request.params.userName + "</h1></body></html>");
 });

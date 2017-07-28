@@ -28,6 +28,21 @@ Wrapper.prototype.findAll = function(name, callback)
 		}
 	});
 };
+Wrapper.prototype.find = function(name, key, value, callback)
+{
+	this.getCollection(name, function(error, wrapper)
+	{
+		if (error) callback(error);
+		else
+		{
+			wrapper.findOne({'_id':ObjectID(id)}, function(error, doc)
+			{
+				if (error) callback(error);
+				else callback(null, doc);
+			});
+		}
+	});
+};
 Wrapper.prototype.get = function(name, id, callback)
 {
 	this.getCollection(name, function(error, wrapper)
