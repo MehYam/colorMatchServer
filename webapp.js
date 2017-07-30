@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 //   res.send('Hello World - from webapp.js')
 // })
 
-app.use(express.static('static'));
+app.use(express.static('public'));
 app.use(bodyParser.json());
 
 let requests = 0;
