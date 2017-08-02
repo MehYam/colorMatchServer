@@ -2,8 +2,6 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const $ = require('jquery');
 
-const foo = 'barx';
-
 class Portal extends React.Component
 {
    constructor() {
