@@ -1,18 +1,25 @@
 {
-  "name": "learning",
+  "name": "colorMatch",
   "version": "0.0.1",
-  "description": "test app",
+  "description": "Color match game",
   "main": "webapp.js",
   "author": "cdn.kai@gmail.com",
   "license": "ISC",
   "private": true,
   "devDependencies": {
-    "babel-cli": "*"
+    "babelify": "*",
+    "babel-cli": "*",
+    "babel-preset-react": "*",
+    "browserify": "*",
+    "gulp": "*",
+    "vinyl-source-stream": "*"
   },
   "dependencies": {
-     "babel-preset-react": "*",
-     "body-parser": "*",
-     "express": "*",
-     "mongodb": "*"
+    "body-parser": "*",
+    "express": "*",
+    "jquery": "*",
+    "mongodb": "*",
+    "react": "*",
+    "react-dom": "*"
   }
 }

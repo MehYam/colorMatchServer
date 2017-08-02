@@ -1,0 +1,1 @@
+node_modules\.bin\browserify public\app.js > public\bundle.js
