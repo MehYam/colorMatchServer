@@ -29,10 +29,11 @@ gulp.task('watch', () => {
             console.error(err.message);
             console.error(err.codeFrame);
          })
+         .on('end', () => { console.log("Bundle complete.")})
          .pipe(source('bundle.js'))
          .pipe(gulp.dest('public/'));
 
-      console.log("Bundle updated");
+      console.log("Bundle building...");
    }
 
    makeBundle();

@@ -31414,6 +31414,10 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const $ = require('jquery');
 
+const UserFilter = require('./adminUserFilter');
+const UserTable = require('./adminUserTable');
+const UserAdd = require('./adminUserAdd');
+
 class Portal extends React.Component {
    constructor() {
       super();
@@ -31449,24 +31453,11 @@ class Portal extends React.Component {
    }
 }
 
-function UserFilter() {
-   return React.createElement('div', null, 'UserFilter');
-}
+module.exports = Portal;
 
-function UserRow(props) {
-   return React.createElement('tr', null, React.createElement('td', null, props.user._id), React.createElement('td', null, props.user.lastName), React.createElement('td', null, props.user.firstName));
-}
-
-class UserTable extends React.Component {
-   renderRow(user) {
-      return React.createElement(UserRow, { key: user._id, user: user });
-   }
-   render() {
-      var renderRowCapture = this.renderRow;
-      var userRows = this.props.users.map(renderRowCapture);
-      return React.createElement('table', null, React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'ID'), React.createElement('th', null, 'Last'), React.createElement('th', null, 'First'))), React.createElement('tbody', null, userRows));
-   }
-}
+},{"./adminUserAdd":186,"./adminUserFilter":187,"./adminUserTable":188,"jquery":25,"react":184,"react-dom":32}],186:[function(require,module,exports){
+const React = require('react');
+const ReactDOM = require('react-dom');
 
 class UserAdd extends React.Component {
    constructor(props) {
@@ -31490,6 +31481,97 @@ class UserAdd extends React.Component {
    }
 }
 
+module.exports = UserAdd;
+
+},{"react":184,"react-dom":32}],187:[function(require,module,exports){
+const React = require('react');
+const ReactDOM = require('react-dom');
+
+function UserFilter() {
+  return React.createElement(
+    'div',
+    null,
+    'UserFilter'
+  );
+}
+
+module.exports = UserFilter;
+
+},{"react":184,"react-dom":32}],188:[function(require,module,exports){
+const React = require('react');
+const ReactDOM = require('react-dom');
+
+function UserRow(props) {
+   return React.createElement(
+      'tr',
+      null,
+      React.createElement(
+         'td',
+         null,
+         props.user._id
+      ),
+      React.createElement(
+         'td',
+         null,
+         props.user.lastName
+      ),
+      React.createElement(
+         'td',
+         null,
+         props.user.firstName
+      )
+   );
+}
+
+class UserTable extends React.Component {
+   renderRow(user) {
+      return React.createElement(UserRow, { key: user._id, user: user });
+   }
+   render() {
+      var renderRowCapture = this.renderRow;
+      var userRows = this.props.users.map(renderRowCapture);
+      return React.createElement(
+         'table',
+         null,
+         React.createElement(
+            'thead',
+            null,
+            React.createElement(
+               'tr',
+               null,
+               React.createElement(
+                  'th',
+                  null,
+                  'ID'
+               ),
+               React.createElement(
+                  'th',
+                  null,
+                  'Last'
+               ),
+               React.createElement(
+                  'th',
+                  null,
+                  'First'
+               )
+            )
+         ),
+         React.createElement(
+            'tbody',
+            null,
+            userRows
+         )
+      );
+   }
+}
+
+module.exports = UserTable;
+
+},{"react":184,"react-dom":32}],189:[function(require,module,exports){
+const React = require('react');
+const ReactDOM = require('react-dom');
+const Portal = require('./adminPortal');
+
 ReactDOM.render(React.createElement(Portal, null), document.getElementById('main'));
 
-},{"jquery":25,"react":184,"react-dom":32}]},{},[185]);
+},{"./adminPortal":185,"react":184,"react-dom":32}]},{},[189]);
