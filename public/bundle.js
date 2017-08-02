@@ -31424,16 +31424,14 @@ class Portal extends React.Component {
       this.state = { users: [] };
    }
    componentDidMount() {
-      $.ajax('/api/users/getAll').done(function (userArray) {
-         this.setState({ users: userArray });
-      }.bind(this));
+      this.loadUsers({});
    }
    addUser(user) {
 
       //KAI: I fundamentally disagree with this approach, but "it works for now".  Guessing what the server's data
       // looks like after a call is just asking for trouble.
       $.ajax({
-         type: 'POST', url: '/api/users/add', contentType: 'application/json',
+         type: 'POST', url: '/api/admin/users/add', contentType: 'application/json',
          data: JSON.stringify(user),
          success: function (data) {
             var newUsers = this.state.users.slice();
@@ -31448,8 +31446,13 @@ class Portal extends React.Component {
          }
       });
    }
+   loadUsers(filterTerms) {
+      $.ajax('/api/admin/users/get', { data: filterTerms }).done(function (userArray) {
+         this.setState({ users: userArray });
+      }.bind(this));
+   }
    render() {
-      return React.createElement('div', null, React.createElement('h1', null, 'User Admin Portal'), React.createElement(UserFilter, null), React.createElement('hr', null), React.createElement(UserTable, { users: this.state.users }), React.createElement('hr', null), React.createElement(UserAdd, { onSubmit: u => this.addUser(u) }));
+      return React.createElement('div', null, React.createElement('h1', null, 'User Admin Portal'), React.createElement(UserTable, { users: this.state.users }), React.createElement('hr', null), React.createElement(UserFilter, { onSubmit: filter => this.loadUsers(filter) }), React.createElement('hr', null), React.createElement(UserAdd, { onSubmit: u => this.addUser(u) }));
    }
 }
 
@@ -31470,14 +31473,24 @@ class UserAdd extends React.Component {
    handleSubmit(e) {
       e.preventDefault();
 
-      var form = document.forms.userAdd;
-      var user = { firstName: form.first.value, lastName: form.last.value };
+      const form = document.forms.userAdd;
+      const user = { firstName: form.first.value, lastName: form.last.value };
 
       this.props.onSubmit(user);
    }
 
    render() {
-      return React.createElement('div', null, React.createElement('form', { name: 'userAdd', onSubmit: this.handleSubmit }, React.createElement('input', { type: 'text', name: 'first', placeholder: 'first name', defaultValue: 'foo' }), React.createElement('input', { type: 'text', name: 'last', placeholder: 'last name', defaultValue: 'bar' }), React.createElement('input', { type: 'submit', value: 'Add User' })));
+      return React.createElement(
+         'div',
+         null,
+         React.createElement(
+            'form',
+            { name: 'userAdd', onSubmit: this.handleSubmit },
+            React.createElement('input', { type: 'text', name: 'first', placeholder: 'first name', defaultValue: 'foo' }),
+            React.createElement('input', { type: 'text', name: 'last', placeholder: 'last name', defaultValue: 'bar' }),
+            React.createElement('input', { type: 'submit', value: 'Add User' })
+         )
+      );
    }
 }
 
@@ -31487,12 +31500,24 @@ module.exports = UserAdd;
 const React = require('react');
 const ReactDOM = require('react-dom');
 
-function UserFilter() {
-  return React.createElement(
-    'div',
-    null,
-    'UserFilter'
-  );
+class UserFilter extends React.Component {
+   constructor(props) {
+      super(props);
+
+      this.state = { value: '' };
+      this.handleSubmit = this.handleSubmit.bind(this);
+   }
+   handleSubmit(e) {
+      e.preventDefault();
+
+      const form = document.forms.userFilter;
+      const terms = { firstName: form.first.value };
+
+      this.props.onSubmit(terms);
+   }
+   render() {
+      return React.createElement('div', null, React.createElement('form', { name: 'userFilter', onSubmit: this.handleSubmit }, React.createElement('input', { type: 'text', name: 'first', placeholder: 'first name' }), React.createElement('input', { type: 'submit', value: 'Apply Filter' })));
+   }
 }
 
 module.exports = UserFilter;

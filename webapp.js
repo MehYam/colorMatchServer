@@ -11,14 +11,19 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 let requests = 0;
-app.get('/api/users/getAll', (req, res) => {
+app.get('/api/admin/users/get', (req, res) => {
 
-   database.collection(table).find().toArray( (err, docs) => {
+   console.log("query:", req.query);
+
+   const filter = {};
+   if (req.query.firstName) {
+      filter.firstName = req.query.firstName;
+   }
+   database.collection(table).find(filter).toArray( (err, docs) => {
       res.json(docs);
    });
-//   res.status(200).send(users.JSON);
 });
-app.post('/api/users/add', (req, res) =>
+app.post('/api/admin/users/add', (req, res) =>
 {
    console.log("request body: ", req.body);
 

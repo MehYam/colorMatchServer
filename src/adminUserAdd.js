@@ -12,8 +12,8 @@ class UserAdd extends React.Component {
    handleSubmit(e) {
       e.preventDefault();
 
-      var form = document.forms.userAdd;
-      var user = { firstName: form.first.value, lastName: form.last.value };
+      const form = document.forms.userAdd;
+      const user = { firstName: form.first.value, lastName: form.last.value };
 
       this.props.onSubmit(user);
    }
