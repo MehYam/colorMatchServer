@@ -31414,6 +31414,8 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const $ = require('jquery');
 
+const foo = 'barx';
+
 class Portal extends React.Component {
    constructor() {
       super();
@@ -31445,51 +31447,16 @@ class Portal extends React.Component {
       });
    }
    render() {
-      return React.createElement(
-         'div',
-         null,
-         React.createElement(
-            'h1',
-            null,
-            'User Admin Portal'
-         ),
-         React.createElement(UserFilter, null),
-         React.createElement('hr', null),
-         React.createElement(UserTable, { users: this.state.users }),
-         React.createElement('hr', null),
-         React.createElement(UserAdd, { onSubmit: u => this.addUser(u) })
-      );
+      return React.createElement('div', null, React.createElement('h1', null, 'User Admin Portal'), React.createElement(UserFilter, null), React.createElement('hr', null), React.createElement(UserTable, { users: this.state.users }), React.createElement('hr', null), React.createElement(UserAdd, { onSubmit: u => this.addUser(u) }));
    }
 }
 
 function UserFilter() {
-   return React.createElement(
-      'div',
-      null,
-      'UserFilter'
-   );
+   return React.createElement('div', null, 'UserFilter');
 }
 
 function UserRow(props) {
-   return React.createElement(
-      'tr',
-      null,
-      React.createElement(
-         'td',
-         null,
-         props.user._id
-      ),
-      React.createElement(
-         'td',
-         null,
-         props.user.lastName
-      ),
-      React.createElement(
-         'td',
-         null,
-         props.user.firstName
-      )
-   );
+   return React.createElement('tr', null, React.createElement('td', null, props.user._id), React.createElement('td', null, props.user.lastName), React.createElement('td', null, props.user.firstName));
 }
 
 class UserTable extends React.Component {
@@ -31499,38 +31466,7 @@ class UserTable extends React.Component {
    render() {
       var renderRowCapture = this.renderRow;
       var userRows = this.props.users.map(renderRowCapture);
-      return React.createElement(
-         'table',
-         null,
-         React.createElement(
-            'thead',
-            null,
-            React.createElement(
-               'tr',
-               null,
-               React.createElement(
-                  'th',
-                  null,
-                  'ID'
-               ),
-               React.createElement(
-                  'th',
-                  null,
-                  'Last'
-               ),
-               React.createElement(
-                  'th',
-                  null,
-                  'First'
-               )
-            )
-         ),
-         React.createElement(
-            'tbody',
-            null,
-            userRows
-         )
-      );
+      return React.createElement('table', null, React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'ID'), React.createElement('th', null, 'Last'), React.createElement('th', null, 'First'))), React.createElement('tbody', null, userRows));
    }
 }
 
@@ -31552,17 +31488,7 @@ class UserAdd extends React.Component {
    }
 
    render() {
-      return React.createElement(
-         'div',
-         null,
-         React.createElement(
-            'form',
-            { name: 'userAdd', onSubmit: this.handleSubmit },
-            React.createElement('input', { type: 'text', name: 'first', placeholder: 'first name', defaultValue: 'foo' }),
-            React.createElement('input', { type: 'text', name: 'last', placeholder: 'last name', defaultValue: 'bar' }),
-            React.createElement('input', { type: 'submit', value: 'Add User' })
-         )
-      );
+      return React.createElement('div', null, React.createElement('form', { name: 'userAdd', onSubmit: this.handleSubmit }, React.createElement('input', { type: 'text', name: 'first', placeholder: 'first name', defaultValue: 'foo' }), React.createElement('input', { type: 'text', name: 'last', placeholder: 'last name', defaultValue: 'bar' }), React.createElement('input', { type: 'submit', value: 'Add User' })));
    }
 }
 

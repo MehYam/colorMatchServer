@@ -1,6 +1,7 @@
-const gulp = require('gulp');
 const browserify = require('browserify');
+const gulp = require('gulp');
 const source = require('vinyl-source-stream');
+const watchify = require('watchify');
 
 gulp.task('bundle', () => {
    return browserify('src/app.js')
@@ -8,4 +9,26 @@ gulp.task('bundle', () => {
       .bundle()
       .pipe(source('bundle.js'))
       .pipe(gulp.dest('public/'));
+});
+
+gulp.task('watch', () => {
+
+   const b = browserify({
+      entries: ['src/app.js'],
+      cache: {},
+      packageCache: {},
+      plugin: ['watchify']
+   });
+
+   b.on('update', makeBundle);
+
+   function makeBundle() {
+      b.transform('babelify', {presets: 'react'})
+         .bundle()
+         .pipe(source('bundle.js'))
+         .pipe(gulp.dest('public/'));
+   }
+
+   makeBundle();
+   return b;
 });

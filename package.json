@@ -12,6 +12,7 @@
     "babel-preset-react": "*",
     "browserify": "*",
     "gulp": "*",
+    "watchify": "*",
     "vinyl-source-stream": "*"
   },
   "dependencies": {
