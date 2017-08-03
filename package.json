@@ -18,9 +18,11 @@
   "dependencies": {
     "body-parser": "*",
     "express": "*",
+    "history": "*",
     "jquery": "*",
     "mongodb": "*",
     "react": "*",
-    "react-dom": "*"
+    "react-dom": "*",
+    "react-router-dom": "*"
   }
 }
