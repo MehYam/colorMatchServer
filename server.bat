@@ -1,2 +1,2 @@
 @echo off
-node webapp.js
+node server.js

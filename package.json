@@ -2,7 +2,7 @@
   "name": "colorMatch",
   "version": "0.0.1",
   "description": "Color match game",
-  "main": "webapp.js",
+  "main": "server.js",
   "author": "cdn.kai@gmail.com",
   "license": "ISC",
   "private": true,
