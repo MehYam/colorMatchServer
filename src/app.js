@@ -14,13 +14,14 @@ const SignIn = require('./signIn');
 class NoMatch extends React.Component {
    render() { return <h2>Page not found</h2>; }
 }
+
 class App extends React.Component {
    render() {
       return (
          <div>
             <Header/>
             <Switch>
-               <Route path='/' component={Home}/>
+               <Route exact path='/' component={Home}/>
                <Route path='/admin' component={AdminPortal}/>
                <Route path='/signin' component={SignIn}/>
                <Route path='*' component={NoMatch}/>

@@ -34974,9 +34974,10 @@ class NoMatch extends React.Component {
       return React.createElement('h2', null, 'Page not found');
    }
 }
+
 class App extends React.Component {
    render() {
-      return React.createElement('div', null, React.createElement(Header, null), React.createElement(Switch, null, React.createElement(Route, { path: '/', component: Home }), React.createElement(Route, { path: '/admin', component: AdminPortal }), React.createElement(Route, { path: '/signin', component: SignIn }), React.createElement(Route, { path: '*', component: NoMatch })));
+      return React.createElement('div', null, React.createElement(Header, null), React.createElement(Switch, null, React.createElement(Route, { exact: true, path: '/', component: Home }), React.createElement(Route, { path: '/admin', component: AdminPortal }), React.createElement(Route, { path: '/signin', component: SignIn }), React.createElement(Route, { path: '*', component: NoMatch })));
    }
 }
 ReactDOM.render(React.createElement(BrowserRouter, null, React.createElement(App, null)), document.getElementById('main'));
