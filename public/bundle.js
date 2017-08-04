@@ -34752,7 +34752,7 @@ const UserFilter = require('./adminUserFilter');
 const UserTable = require('./adminUserTable');
 const UserAdd = require('./adminUserAdd');
 
-class Portal extends React.Component {
+class AdminPortal extends React.Component {
    constructor() {
       super();
       this.state = { users: [] };
@@ -34796,14 +34796,14 @@ class Portal extends React.Component {
          ),
          React.createElement(UserTable, { users: this.state.users }),
          React.createElement('hr', null),
-         React.createElement(UserFilter, { onSubmit: filter => this.loadUsers(filter) }),
+         React.createElement(UserFilter, { onSubmit: filter => this.loadUsers(filter), firstName: this.props.location.query }),
          React.createElement('hr', null),
          React.createElement(UserAdd, { onSubmit: u => this.addUser(u) })
       );
    }
 }
 
-module.exports = Portal;
+module.exports = AdminPortal;
 
 },{"./adminUserAdd":226,"./adminUserFilter":227,"./adminUserTable":228,"jquery":34,"react":221,"react-dom":43}],226:[function(require,module,exports){
 const React = require('react');
@@ -34851,7 +34851,11 @@ class UserFilter extends React.Component {
    constructor(props) {
       super(props);
 
-      this.state = { value: '' };
+      const initialFilter = this.props.firstName || '';
+
+      console.log("props", this.props);
+
+      this.state = { value: initialFilter };
       this.handleSubmit = this.handleSubmit.bind(this);
    }
    handleSubmit(e) {
@@ -34862,6 +34866,9 @@ class UserFilter extends React.Component {
 
       this.props.onSubmit(terms);
    }
+   handleChange(e) {
+      this.setState({ value: event.target.value });
+   }
    render() {
       return React.createElement(
          'div',
@@ -34869,7 +34876,7 @@ class UserFilter extends React.Component {
          React.createElement(
             'form',
             { name: 'userFilter', onSubmit: this.handleSubmit },
-            React.createElement('input', { type: 'text', name: 'first', placeholder: 'first name' }),
+            React.createElement('input', { type: 'text', name: 'first', placeholder: 'first name', value: this.state.value, onChange: this.handleChange }),
             React.createElement('input', { type: 'submit', value: 'Apply Filter' })
          )
       );
@@ -34951,15 +34958,117 @@ module.exports = UserTable;
 },{"react":221,"react-dom":43}],229:[function(require,module,exports){
 const React = require('react');
 const ReactDOM = require('react-dom');
-//const Redirect = require('react-router').Redirect;
 const BrowserRouter = require('react-router-dom').BrowserRouter;
+const HashRouter = require('react-router-dom').HashRouter;
+const Switch = require('react-router-dom').Switch;
+const Route = require('react-router-dom').Route;
+const Redirect = require('react-router-dom').Redirect;
 
-const Portal = require('./adminPortal');
+const AdminPortal = require('./adminPortal');
+const Header = require('./header');
+const Home = require('./home');
+const SignIn = require('./signIn');
 
-function NoMatch() {
-   return React.createElement('h2', null, 'No match for the route');
+class NoMatch extends React.Component {
+   render() {
+      return React.createElement('h2', null, 'Page not found');
+   }
+}
+class App extends React.Component {
+   render() {
+      return React.createElement('div', null, React.createElement(Header, null), React.createElement(Switch, null, React.createElement(Route, { path: '/', component: Home }), React.createElement(Route, { path: '/admin', component: AdminPortal }), React.createElement(Route, { path: '/signin', component: SignIn }), React.createElement(Route, { path: '*', component: NoMatch })));
+   }
+}
+ReactDOM.render(React.createElement(BrowserRouter, null, React.createElement(App, null)), document.getElementById('main'));
+
+// <HashRouter>
+//    <Switch>
+//       <Redirect exact from="/" to="/admin/users"/>
+//       <Route path="/admin/users" component={Portal}/>
+//       <Route path="*" component={NoMatch}/>
+//    </Switch>
+// </HashRouter>
+
+},{"./adminPortal":225,"./header":230,"./home":231,"./signIn":232,"react":221,"react-dom":43,"react-router-dom":181}],230:[function(require,module,exports){
+const React = require('react');
+const Link = require('react-router-dom').Link;
+
+class Header extends React.Component {
+   render() {
+      return React.createElement(
+         'header',
+         null,
+         React.createElement(
+            'nav',
+            null,
+            React.createElement(
+               'ul',
+               null,
+               React.createElement(
+                  'li',
+                  null,
+                  React.createElement(
+                     Link,
+                     { to: '/' },
+                     'Home'
+                  )
+               ),
+               React.createElement(
+                  'li',
+                  null,
+                  React.createElement(
+                     Link,
+                     { to: '/admin' },
+                     'Admin'
+                  )
+               ),
+               React.createElement(
+                  'li',
+                  null,
+                  React.createElement(
+                     Link,
+                     { to: '/signin' },
+                     'Sign In'
+                  )
+               )
+            )
+         )
+      );
+   }
 }
 
-ReactDOM.render(React.createElement(BrowserRouter, null, React.createElement(Portal, null)), document.getElementById('main'));
+module.exports = Header;
 
-},{"./adminPortal":225,"react":221,"react-dom":43,"react-router-dom":181}]},{},[229]);
+},{"react":221,"react-router-dom":181}],231:[function(require,module,exports){
+const React = require('react');
+const ReactDOM = require('react-dom');
+
+class Home extends React.Component {
+   render() {
+      return React.createElement(
+         'div',
+         null,
+         'This is the home component'
+      );
+   }
+}
+
+module.exports = Home;
+
+},{"react":221,"react-dom":43}],232:[function(require,module,exports){
+const React = require('react');
+const ReactDOM = require('react-dom');
+
+class SignIn extends React.Component {
+   render() {
+      return React.createElement(
+         'div',
+         null,
+         'This is the SignIn component'
+      );
+   }
+}
+
+module.exports = SignIn;
+
+},{"react":221,"react-dom":43}]},{},[229]);

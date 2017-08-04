@@ -23,13 +23,16 @@ gulp.task('watch', () => {
    b.on('update', makeBundle);
 
    function makeBundle() {
+
+      const start = Date.now();
+
       b.transform('babelify', {presets: 'react'})
          .bundle()
          .on('error', (err) => {
             console.error(err.message);
             console.error(err.codeFrame);
          })
-         .on('end', () => { console.log("Bundle complete.")})
+         .on('end', () => { console.log("Bundle completed in", (Date.now() - start), "ms.")})
          .pipe(source('bundle.js'))
          .pipe(gulp.dest('public/'));
 

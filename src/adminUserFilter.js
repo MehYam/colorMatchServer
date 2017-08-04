@@ -5,7 +5,11 @@ class UserFilter extends React.Component {
    constructor(props) {
       super(props);
 
-      this.state = {value: ''};
+      const initialFilter = this.props.firstName || '';
+
+      console.log("props", this.props);
+
+      this.state = {value: initialFilter};
       this.handleSubmit = this.handleSubmit.bind(this);
    }
    handleSubmit(e) {
@@ -16,11 +20,14 @@ class UserFilter extends React.Component {
 
       this.props.onSubmit(terms);
    }
+   handleChange(e) {
+      this.setState({value: event.target.value});
+   }
    render() {
       return (
          <div>
             <form name="userFilter" onSubmit={this.handleSubmit}>
-               <input type="text" name="first" placeholder="first name"/>
+               <input type="text" name="first" placeholder="first name" value={this.state.value} onChange={this.handleChange}/>
                <input type="submit" value="Apply Filter"/>
             </form>
          </div>

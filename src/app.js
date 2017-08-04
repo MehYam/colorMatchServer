@@ -1,17 +1,47 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
-//const Redirect = require('react-router').Redirect;
 const BrowserRouter = require('react-router-dom').BrowserRouter;
+const HashRouter = require('react-router-dom').HashRouter;
+const Switch = require('react-router-dom').Switch;
+const Route = require('react-router-dom').Route;
+const Redirect = require('react-router-dom').Redirect;
 
-const Portal = require('./adminPortal');
+const AdminPortal = require('./adminPortal');
+const Header = require('./header');
+const Home = require('./home');
+const SignIn = require('./signIn');
 
-function NoMatch() { return <h2>No match for the route</h2>; }
-
+class NoMatch extends React.Component {
+   render() { return <h2>Page not found</h2>; }
+}
+class App extends React.Component {
+   render() {
+      return (
+         <div>
+            <Header/>
+            <Switch>
+               <Route path='/' component={Home}/>
+               <Route path='/admin' component={AdminPortal}/>
+               <Route path='/signin' component={SignIn}/>
+               <Route path='*' component={NoMatch}/>
+            </Switch>
+         </div>
+      );
+   }   
+}
 ReactDOM.render(
    (
       <BrowserRouter>
-         <Portal />
+         <App/>
       </BrowserRouter>
    ),
    document.getElementById('main')
 );
+
+      // <HashRouter>
+      //    <Switch>
+      //       <Redirect exact from="/" to="/admin/users"/>
+      //       <Route path="/admin/users" component={Portal}/>
+      //       <Route path="*" component={NoMatch}/>
+      //    </Switch>
+      // </HashRouter>

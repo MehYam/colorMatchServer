@@ -6,7 +6,7 @@ const UserFilter = require('./adminUserFilter');
 const UserTable = require('./adminUserTable');
 const UserAdd = require('./adminUserAdd');
 
-class Portal extends React.Component
+class AdminPortal extends React.Component
 {
    constructor() {
       super();
@@ -49,7 +49,7 @@ class Portal extends React.Component
             <h1>User Admin Portal</h1>
             <UserTable users={this.state.users}/>
             <hr/>
-            <UserFilter onSubmit={(filter) => this.loadUsers(filter)}/>
+            <UserFilter onSubmit={(filter) => this.loadUsers(filter)} firstName={this.props.location.query}/>
             <hr/>
             <UserAdd onSubmit={(u) => this.addUser(u)}/>
         </div>
@@ -57,4 +57,4 @@ class Portal extends React.Component
    }
 }
 
-module.exports = Portal;
+module.exports = AdminPortal;
