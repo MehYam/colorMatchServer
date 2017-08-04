@@ -34971,24 +34971,36 @@ const SignIn = require('./signIn');
 
 class NoMatch extends React.Component {
    render() {
-      return React.createElement('h2', null, 'Page not found');
+      return React.createElement(
+         'h2',
+         null,
+         'Page not found'
+      );
    }
 }
 
 class App extends React.Component {
    render() {
-      return React.createElement('div', null, React.createElement(Header, null), React.createElement(Switch, null, React.createElement(Route, { exact: true, path: '/', component: Home }), React.createElement(Route, { path: '/admin', component: AdminPortal }), React.createElement(Route, { path: '/signin', component: SignIn }), React.createElement(Route, { path: '*', component: NoMatch })));
+      return React.createElement(
+         'div',
+         null,
+         React.createElement(Header, null),
+         React.createElement(
+            Switch,
+            null,
+            React.createElement(Route, { exact: true, path: '/', component: Home }),
+            React.createElement(Route, { path: '/admin', component: AdminPortal }),
+            React.createElement(Route, { path: '/signin', component: SignIn }),
+            React.createElement(Route, { path: '*', component: NoMatch })
+         )
+      );
    }
 }
-ReactDOM.render(React.createElement(HashRouter, null, React.createElement(App, null)), document.getElementById('main'));
-
-// <HashRouter>
-//    <Switch>
-//       <Redirect exact from="/" to="/admin/users"/>
-//       <Route path="/admin/users" component={Portal}/>
-//       <Route path="*" component={NoMatch}/>
-//    </Switch>
-// </HashRouter>
+ReactDOM.render(React.createElement(
+   HashRouter,
+   null,
+   React.createElement(App, null)
+), document.getElementById('main'));
 
 },{"./adminPortal":225,"./header":230,"./home":231,"./signIn":232,"react":221,"react-dom":43,"react-router-dom":181}],230:[function(require,module,exports){
 const React = require('react');

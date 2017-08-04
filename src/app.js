@@ -38,11 +38,3 @@ ReactDOM.render(
    ),
    document.getElementById('main')
 );
-
-      // <HashRouter>
-      //    <Switch>
-      //       <Redirect exact from="/" to="/admin/users"/>
-      //       <Route path="/admin/users" component={Portal}/>
-      //       <Route path="*" component={NoMatch}/>
-      //    </Switch>
-      // </HashRouter>
