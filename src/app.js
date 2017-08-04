@@ -32,9 +32,9 @@ class App extends React.Component {
 }
 ReactDOM.render(
    (
-      <BrowserRouter>
+      <HashRouter>
          <App/>
-      </BrowserRouter>
+      </HashRouter>
    ),
    document.getElementById('main')
 );
