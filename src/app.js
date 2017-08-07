@@ -11,19 +11,39 @@ const Header = require('./header');
 const Home = require('./home');
 const SignIn = require('./signIn');
 
+const $ = require('jquery');
+
 class NoMatch extends React.Component {
    render() { return <h2>Page not found</h2>; }
 }
 
 class App extends React.Component {
+   constructor() {
+      super();
+      this.state = {
+         signedInStatus: 'not signed in'
+      };
+   }
+   onSignIn() {
+      console.log("signing in");
+      $.ajax({
+         url: '/api/signin',
+         type: 'POST',
+         contentType: 'application/json',
+         data: JSON.stringify({firstName: 'Kai'})
+      });
+   }
+   onSignOut() {
+      console.error('signing out');
+   }
    render() {
       return (
          <div>
-            <Header/>
+            <Header signedInStatus={this.state.signedInStatus}/>
             <Switch>
                <Route exact path='/' component={Home}/>
                <Route path='/admin' component={AdminPortal}/>
-               <Route path='/signin' component={SignIn}/>
+               <Route path='/signin' render={() => <SignIn onSignIn={this.onSignIn.bind(this)} /> } />
                <Route path='*' component={NoMatch}/>
             </Switch>
          </div>

@@ -34969,6 +34969,8 @@ const Header = require('./header');
 const Home = require('./home');
 const SignIn = require('./signIn');
 
+const $ = require('jquery');
+
 class NoMatch extends React.Component {
    render() {
       return React.createElement(
@@ -34980,17 +34982,35 @@ class NoMatch extends React.Component {
 }
 
 class App extends React.Component {
+   constructor() {
+      super();
+      this.state = {
+         signedInStatus: 'not signed in'
+      };
+   }
+   onSignIn() {
+      console.log("signing in");
+      $.ajax({
+         url: '/api/signin',
+         type: 'POST',
+         contentType: 'application/json',
+         data: JSON.stringify({ firstName: 'Kai' })
+      });
+   }
+   onSignOut() {
+      console.error('signing out');
+   }
    render() {
       return React.createElement(
          'div',
          null,
-         React.createElement(Header, null),
+         React.createElement(Header, { signedInStatus: this.state.signedInStatus }),
          React.createElement(
             Switch,
             null,
             React.createElement(Route, { exact: true, path: '/', component: Home }),
             React.createElement(Route, { path: '/admin', component: AdminPortal }),
-            React.createElement(Route, { path: '/signin', component: SignIn }),
+            React.createElement(Route, { path: '/signin', render: () => React.createElement(SignIn, { onSignIn: this.onSignIn.bind(this) }) }),
             React.createElement(Route, { path: '*', component: NoMatch })
          )
       );
@@ -35002,7 +35022,7 @@ ReactDOM.render(React.createElement(
    React.createElement(App, null)
 ), document.getElementById('main'));
 
-},{"./adminPortal":225,"./header":230,"./home":231,"./signIn":232,"react":221,"react-dom":43,"react-router-dom":181}],230:[function(require,module,exports){
+},{"./adminPortal":225,"./header":230,"./home":231,"./signIn":232,"jquery":34,"react":221,"react-dom":43,"react-router-dom":181}],230:[function(require,module,exports){
 const React = require('react');
 const Link = require('react-router-dom').Link;
 
@@ -35045,6 +35065,11 @@ class Header extends React.Component {
                   )
                )
             )
+         ),
+         React.createElement(
+            'div',
+            null,
+            this.props.signedInStatus
          )
       );
    }
@@ -35077,7 +35102,9 @@ class SignIn extends React.Component {
       return React.createElement(
          'div',
          null,
-         'This is the SignIn component'
+         'This is the SignIn component',
+         React.createElement('input', { type: 'button', value: 'Sign In', onClick: this.props.onSignIn }),
+         React.createElement('input', { type: 'button', value: 'Sign Out', onClick: this.props.onSignOut })
       );
    }
 }

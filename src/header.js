@@ -12,6 +12,7 @@ class Header extends React.Component {
                   <li><Link to='/signin'>Sign In</Link></li>
                </ul>
             </nav>
+            <div>{this.props.signedInStatus}</div>
          </header>
       );
    }
