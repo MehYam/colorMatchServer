@@ -34984,9 +34984,15 @@ class NoMatch extends React.Component {
 class App extends React.Component {
    constructor() {
       super();
-      this.state = {
-         signedInStatus: 'not signed in'
-      };
+
+      this.state = { signedInStatus: '' };
+   }
+   updateSignedInStatus() {
+      const status = localStorage.user1 ? 'signed in as ' + localStorage.user1 : 'not signed in';
+      this.setState({ signedInStatus: status });
+   }
+   componentDidMount() {
+      this.updateSignedInStatus();
    }
    onSignIn() {
       console.log("signing in");
@@ -34996,7 +35002,8 @@ class App extends React.Component {
          contentType: 'application/json',
          data: JSON.stringify({ firstName: 'Kai' }),
          success: function (data) {
-            this.setState({ signedInStatus: 'signed in as ' + data.user.firstName });
+            localStorage.setItem("user1", data.user.firstName);
+            this.updateSignedInStatus();
          }.bind(this)
       });
    }
@@ -35005,7 +35012,9 @@ class App extends React.Component {
          url: '/api/signout',
          type: 'GET'
       });
-      this.setState({ signedInStatus: 'not signed in' });
+
+      localStorage.removeItem("user1");
+      this.updateSignedInStatus();
    }
    render() {
       return React.createElement(
@@ -35109,7 +35118,7 @@ class SignIn extends React.Component {
       return React.createElement(
          'div',
          null,
-         'This is the SignIn component',
+         React.createElement('input', { type: 'text', placeholder: 'first name' }),
          React.createElement('input', { type: 'button', value: 'Sign In', onClick: this.props.onSignIn }),
          React.createElement('input', { type: 'button', value: 'Sign Out', onClick: this.props.onSignOut })
       );

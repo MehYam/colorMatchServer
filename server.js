@@ -1,19 +1,15 @@
 const assert = require('assert');
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
 const session = require('client-sessions');
 
-// app.get('/', function (req, res) {
-//   res.send('Hello World - from webapp.js')
-// })
-
+const app = express();
 app.use(bodyParser.json());
 app.use(session({
    cookieName: 'colorMatchSession',
 //KAI: load this from a local non-repo file
    secret: 'steve_rockwell_is_jouko_salomaa_dev_1',
-   duration: 7 * 24 * 60 * 60* 1000,
+   duration: 7 * 24 * 60 * 60 * 1000,
    httpOnly: true,
 //   secure: true,   KAI: need https
    activeDuration: 24 * 60 * 60 * 1000
@@ -86,8 +82,8 @@ app.post('/api/signin', (req, res) =>
          res.json({user: query, error: false});
       }
    });
-
 });
+
 app.get('/api/signout', (req, res) =>
 {
    // not sure how to structure the session/signed-in state of the app, but implementing this is the next step in making it work

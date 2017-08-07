@@ -20,9 +20,15 @@ class NoMatch extends React.Component {
 class App extends React.Component {
    constructor() {
       super();
-      this.state = {
-         signedInStatus: 'not signed in'
-      };
+
+      this.state = { signedInStatus:  '' };
+   }
+   updateSignedInStatus() {
+      const status = localStorage.user1 ? ('signed in as ' + localStorage.user1) : 'not signed in';
+      this.setState({ signedInStatus: status });
+   }
+   componentDidMount() {
+      this.updateSignedInStatus();
    }
    onSignIn() {
       console.log("signing in");
@@ -33,7 +39,8 @@ class App extends React.Component {
          data: JSON.stringify({firstName: 'Kai'}),
          success: function(data)
          {
-            this.setState({ signedInStatus: 'signed in as ' + data.user.firstName})
+            localStorage.setItem("user1", data.user.firstName);
+            this.updateSignedInStatus();
          }.bind(this)
       });
    }
@@ -42,7 +49,9 @@ class App extends React.Component {
          url: '/api/signout',
          type: 'GET'
       });
-      this.setState({ signedInStatus: 'not signed in'});
+
+      localStorage.removeItem("user1");
+      this.updateSignedInStatus();
    }
    render() {
       return (
