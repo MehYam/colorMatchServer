@@ -34994,11 +34994,18 @@ class App extends React.Component {
          url: '/api/signin',
          type: 'POST',
          contentType: 'application/json',
-         data: JSON.stringify({ firstName: 'Kai' })
+         data: JSON.stringify({ firstName: 'Kai' }),
+         success: function (data) {
+            this.setState({ signedInStatus: 'signed in as ' + data.user.firstName });
+         }.bind(this)
       });
    }
    onSignOut() {
-      console.error('signing out');
+      $.ajax({
+         url: '/api/signout',
+         type: 'GET'
+      });
+      this.setState({ signedInStatus: 'not signed in' });
    }
    render() {
       return React.createElement(
@@ -35010,7 +35017,7 @@ class App extends React.Component {
             null,
             React.createElement(Route, { exact: true, path: '/', component: Home }),
             React.createElement(Route, { path: '/admin', component: AdminPortal }),
-            React.createElement(Route, { path: '/signin', render: () => React.createElement(SignIn, { onSignIn: this.onSignIn.bind(this) }) }),
+            React.createElement(Route, { path: '/signin', render: () => React.createElement(SignIn, { onSignIn: this.onSignIn.bind(this), onSignOut: this.onSignOut.bind(this) }) }),
             React.createElement(Route, { path: '*', component: NoMatch })
          )
       );

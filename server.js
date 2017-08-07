@@ -20,12 +20,12 @@ app.use(session({
 }));
 
 app.use((req, res, next) => {
-   if (req.colorMatchSession && req.colorMatchSession.testcookie) {
+   if (req.colorMatchSession && req.colorMatchSession.user) {
 
-      console.log('found testcookie');
+      console.log('found user', req.colorMatchSession.user);
    }
    else {
-      console.log('not found testcookie');
+      console.log('new session');
    }
    next();
 });
@@ -68,24 +68,35 @@ app.post('/api/admin/users/add', (req, res) =>
 app.post('/api/signin', (req, res) =>
 {
    let user = req.body;
-   user = {firstName: 'Kai'};
 
    console.log('signin req.body', req.body, 'cookie', req.colorMatchSession);
 
-   database.collection(table).find(user).next( (err, doc) => {
+   // don't pass the query in directly from the client, recompose it to be sure
+   let query = {firstName: user.firstName};
+   database.collection(table).find(query).next( (err, doc) => {
 
-//KAI: left off here - respond to errors?
-      console.log('found user', doc, 'err', err);
+      if (err) {
+         console.error('user not found', user);
+         res.json({error: 'could not find user ' + query.firstName});
+      }
+      else {
+         console.log('found user', doc);
+
+         req.colorMatchSession.user = query;
+         res.json({user: query, error: false});
+      }
    });
 
-   req.colorMatchSession.testcookie = true;
-   res.send('');
 });
-app.post('/api/signout', (req, res) =>
+app.get('/api/signout', (req, res) =>
 {
-   //KAI: left off here.
-
    // not sure how to structure the session/signed-in state of the app, but implementing this is the next step in making it work
+   if (req.colorMatchSession) {
+      req.colorMatchSession.reset();
+
+      //KAI: if you're elite, you don't need to do this.
+      res.redirect('/login');
+   }
 });
 
 ///////////////////////////////////////////////

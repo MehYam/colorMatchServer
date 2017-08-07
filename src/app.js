@@ -30,11 +30,19 @@ class App extends React.Component {
          url: '/api/signin',
          type: 'POST',
          contentType: 'application/json',
-         data: JSON.stringify({firstName: 'Kai'})
+         data: JSON.stringify({firstName: 'Kai'}),
+         success: function(data)
+         {
+            this.setState({ signedInStatus: 'signed in as ' + data.user.firstName})
+         }.bind(this)
       });
    }
    onSignOut() {
-      console.error('signing out');
+      $.ajax({
+         url: '/api/signout',
+         type: 'GET'
+      });
+      this.setState({ signedInStatus: 'not signed in'});
    }
    render() {
       return (
@@ -43,7 +51,7 @@ class App extends React.Component {
             <Switch>
                <Route exact path='/' component={Home}/>
                <Route path='/admin' component={AdminPortal}/>
-               <Route path='/signin' render={() => <SignIn onSignIn={this.onSignIn.bind(this)} /> } />
+               <Route path='/signin' render={() => <SignIn onSignIn={this.onSignIn.bind(this)} onSignOut={this.onSignOut.bind(this)}/> } />
                <Route path='*' component={NoMatch}/>
             </Switch>
          </div>
