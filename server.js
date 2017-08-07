@@ -18,10 +18,10 @@ app.use(session({
 app.use((req, res, next) => {
    if (req.colorMatchSession && req.colorMatchSession.user) {
 
-      console.log('found user', req.colorMatchSession.user);
+      console.log('found colorMatchSession user cookie', req.colorMatchSession.user);
    }
    else {
-      console.log('new session');
+      console.log('no user cookie, new session');
    }
    next();
 });
@@ -71,7 +71,7 @@ app.post('/api/signin', (req, res) =>
    let query = {firstName: user.firstName};
    database.collection(table).find(query).next( (err, doc) => {
 
-      if (err) {
+      if (err || !doc) {
          console.error('user not found', user);
          res.json({error: 'could not find user ' + query.firstName});
       }
@@ -89,9 +89,6 @@ app.get('/api/signout', (req, res) =>
    // not sure how to structure the session/signed-in state of the app, but implementing this is the next step in making it work
    if (req.colorMatchSession) {
       req.colorMatchSession.reset();
-
-      //KAI: if you're elite, you don't need to do this.
-      res.redirect('/login');
    }
 });
 

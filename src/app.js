@@ -23,24 +23,26 @@ class App extends React.Component {
 
       this.state = { signedInStatus:  '' };
    }
-   updateSignedInStatus() {
-      const status = localStorage.user1 ? ('signed in as ' + localStorage.user1) : 'not signed in';
-      this.setState({ signedInStatus: status });
-   }
    componentDidMount() {
       this.updateSignedInStatus();
    }
-   onSignIn() {
-      console.log("signing in");
+   updateSignedInStatus() {
+      this.setState({ signedInStatus: localStorage.user1 });
+   }
+   onSignIn(uname) {
+      console.log('signing in as', uname);
       $.ajax({
          url: '/api/signin',
          type: 'POST',
          contentType: 'application/json',
-         data: JSON.stringify({firstName: 'Kai'}),
+         data: JSON.stringify({firstName: uname}),
          success: function(data)
          {
-            localStorage.setItem("user1", data.user.firstName);
-            this.updateSignedInStatus();
+            if (data.user && data.user.firstName)
+            {
+               localStorage.setItem("user1", data.user.firstName);
+               this.updateSignedInStatus();
+            }
          }.bind(this)
       });
    }
@@ -56,17 +58,19 @@ class App extends React.Component {
    render() {
       return (
          <div>
-            <Header signedInStatus={this.state.signedInStatus}/>
+            <SignIn signedInStatus={this.state.signedInStatus} onSignIn={this.onSignIn.bind(this)} onSignOut={this.onSignOut.bind(this)}/>
+            <Header/>
             <Switch>
                <Route exact path='/' component={Home}/>
                <Route path='/admin' component={AdminPortal}/>
-               <Route path='/signin' render={() => <SignIn onSignIn={this.onSignIn.bind(this)} onSignOut={this.onSignOut.bind(this)}/> } />
                <Route path='*' component={NoMatch}/>
             </Switch>
          </div>
       );
    }   
 }
+// <Route path='/signin' render={() => <SignIn onSignIn={this.onSignIn.bind(this)} onSignOut={this.onSignOut.bind(this)}/> } />
+
 ReactDOM.render(
    (
       <HashRouter>

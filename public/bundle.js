@@ -34853,8 +34853,6 @@ class UserFilter extends React.Component {
 
       const initialFilter = this.props.firstName || '';
 
-      console.log("props", this.props);
-
       this.state = { value: initialFilter };
       this.handleSubmit = this.handleSubmit.bind(this);
    }
@@ -34987,23 +34985,24 @@ class App extends React.Component {
 
       this.state = { signedInStatus: '' };
    }
-   updateSignedInStatus() {
-      const status = localStorage.user1 ? 'signed in as ' + localStorage.user1 : 'not signed in';
-      this.setState({ signedInStatus: status });
-   }
    componentDidMount() {
       this.updateSignedInStatus();
    }
-   onSignIn() {
-      console.log("signing in");
+   updateSignedInStatus() {
+      this.setState({ signedInStatus: localStorage.user1 });
+   }
+   onSignIn(uname) {
+      console.log('signing in as', uname);
       $.ajax({
          url: '/api/signin',
          type: 'POST',
          contentType: 'application/json',
-         data: JSON.stringify({ firstName: 'Kai' }),
+         data: JSON.stringify({ firstName: uname }),
          success: function (data) {
-            localStorage.setItem("user1", data.user.firstName);
-            this.updateSignedInStatus();
+            if (data.user && data.user.firstName) {
+               localStorage.setItem("user1", data.user.firstName);
+               this.updateSignedInStatus();
+            }
          }.bind(this)
       });
    }
@@ -35020,18 +35019,20 @@ class App extends React.Component {
       return React.createElement(
          'div',
          null,
-         React.createElement(Header, { signedInStatus: this.state.signedInStatus }),
+         React.createElement(SignIn, { signedInStatus: this.state.signedInStatus, onSignIn: this.onSignIn.bind(this), onSignOut: this.onSignOut.bind(this) }),
+         React.createElement(Header, null),
          React.createElement(
             Switch,
             null,
             React.createElement(Route, { exact: true, path: '/', component: Home }),
             React.createElement(Route, { path: '/admin', component: AdminPortal }),
-            React.createElement(Route, { path: '/signin', render: () => React.createElement(SignIn, { onSignIn: this.onSignIn.bind(this), onSignOut: this.onSignOut.bind(this) }) }),
             React.createElement(Route, { path: '*', component: NoMatch })
          )
       );
    }
 }
+// <Route path='/signin' render={() => <SignIn onSignIn={this.onSignIn.bind(this)} onSignOut={this.onSignOut.bind(this)}/> } />
+
 ReactDOM.render(React.createElement(
    HashRouter,
    null,
@@ -35070,22 +35071,8 @@ class Header extends React.Component {
                      { to: '/admin' },
                      'Admin'
                   )
-               ),
-               React.createElement(
-                  'li',
-                  null,
-                  React.createElement(
-                     Link,
-                     { to: '/signin' },
-                     'Sign In'
-                  )
                )
             )
-         ),
-         React.createElement(
-            'div',
-            null,
-            this.props.signedInStatus
          )
       );
    }
@@ -35114,13 +35101,48 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 
 class SignIn extends React.Component {
+   constructor(props) {
+      super(props);
+
+      this.state = { uname: props.signedInStatus };
+      this.handleChange = this.handleChange.bind(this);
+   }
+   handleChange(e) {
+      this.setState({ uname: e.target.value });
+   }
    render() {
+      let message = null;
+      let form = null;
+      if (this.props.signedInStatus) {
+         message = React.createElement(
+            'div',
+            null,
+            'Signed in as: ',
+            React.createElement(
+               'b',
+               null,
+               this.props.signedInStatus
+            )
+         );
+         form = React.createElement('input', { type: 'button', value: 'Sign Out', onClick: this.props.onSignOut });
+      } else {
+         message = React.createElement(
+            'div',
+            null,
+            'Please sign in:'
+         );
+         form = React.createElement(
+            'div',
+            null,
+            React.createElement('input', { type: 'text', name: 'first', placeholder: 'first name', value: this.state.value, onChange: this.handleChange }),
+            React.createElement('input', { type: 'button', value: 'Sign In', onClick: () => this.props.onSignIn(this.state.uname) })
+         );
+      }
       return React.createElement(
          'div',
          null,
-         React.createElement('input', { type: 'text', placeholder: 'first name' }),
-         React.createElement('input', { type: 'button', value: 'Sign In', onClick: this.props.onSignIn }),
-         React.createElement('input', { type: 'button', value: 'Sign Out', onClick: this.props.onSignOut })
+         message,
+         form
       );
    }
 }

@@ -7,8 +7,6 @@ class UserFilter extends React.Component {
 
       const initialFilter = this.props.firstName || '';
 
-      console.log("props", this.props);
-
       this.state = {value: initialFilter};
       this.handleSubmit = this.handleSubmit.bind(this);
    }
