@@ -33,7 +33,7 @@ class AdminPortal extends React.Component
          }.bind(this),
          error: (xhr, status, err) => 
          {
-            console.log("error adding user:", err);
+            console.error("error adding user:", err);
          }
       })
    }

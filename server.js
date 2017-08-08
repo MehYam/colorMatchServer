@@ -51,11 +51,12 @@ app.post('/api/admin/users/add', (req, res) =>
       // KAI: error handling....
       // find the newly inserted row and send it back as the response
       if (err) {
-         console.error("insertOne failed: ", err);
+         console.error("addUser failed: ", err);
       }
       else {
          const newId = result.insertedId;
          database.collection(dbUsers).find( {_id: newId} ).next( (err, doc) => {
+            console.log('user added', doc);
             res.json(doc);
          });
       }
@@ -63,9 +64,9 @@ app.post('/api/admin/users/add', (req, res) =>
 });
 app.post('/api/signin', (req, res) =>
 {
-   let user = req.body;
-
    console.log('signin req.body', req.body, 'cookie', req.colorMatchSession);
+
+   let user = req.body;
 
    // don't pass the query in directly from the client, recompose it to be sure
    let query = {firstName: user.firstName};
@@ -87,11 +88,41 @@ app.get('/api/signout', (req, res) =>
 {
    // not sure how to structure the session/signed-in state of the app, but implementing this is the next step in making it work
    if (req.colorMatchSession) {
+
+      console.log("logging out, resetting session");
       req.colorMatchSession.reset();
    }
+   res.sendStatus(200);
 });
-app.get('/api/createGame', (req, res) => 
+app.post('/api/createGame', (req, res) => 
 {
+   console.log('creating game');
+
+   let gameRequest = req.body;
+   getUserDocFromRequest(req, 
+      (doc) => {
+         const newGame = 
+         {
+            player1: doc.firstName,
+            player2: gameRequest.opponent,
+            pending: true,
+            seed: Math.random()
+         };
+         database.collection(dbGames).insertOne(newGame, (err, result) => {
+            if (err) {
+               console.error('createGame failed', err);
+            }
+            else {
+               console.log('createGame success');
+            }
+            res.json([]);
+         });
+      },
+      (error) => {
+         console.error('createGame user not found', error);
+         res.json([]);
+      }
+   );
 });
 app.get('/api/getGames', (req, res) =>
 {
@@ -129,9 +160,10 @@ const mongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 const mongoHost = 'mongodb://localhost:27017/cm1';
 const HTTPPort = 3000;
+
 var database = null;
-var dbUsers = 'dev';
-var dbGames = 'games';
+const dbUsers = 'users';
+const dbGames = 'games';
 
 mongoClient.connect(mongoHost, (err, db) => {
    if (err) {

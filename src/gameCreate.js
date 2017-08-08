@@ -15,7 +15,7 @@ class GameCreate extends React.Component {
       return (
          <div>
             <input type='text' placeholder='opponent' value={this.state.opponent} onChange={this.handleChange}/>
-            <input type='button' value='Start Game'/>
+            <input type='button' value='Start Game' onClick={() => this.props.onClick(this.state.opponent)}/>
          </div>
       )
    }

@@ -44,7 +44,11 @@ class App extends React.Component {
                localStorage.setItem("user1", data.user.firstName);
                this.updateSignedInStatus();
             }
-         }.bind(this)
+         }.bind(this),
+         error: (xhr, status, err) =>
+         {
+            console.error('error signing in:', err);
+         }
       });
    }
    onSignOut() {

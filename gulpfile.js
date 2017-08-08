@@ -34,7 +34,7 @@ gulp.task('watch', () => {
          console.error(err.message);
          console.error(err.codeFrame);
       })
-      .on('end', () => { console.log("Bundle completed in", (Date.now() - start), "ms.")})
+      .on('end', () => { console.log("Bundle completed in", (Date.now() - start), "ms at", new Date().toLocaleTimeString()) })
       .pipe(source('bundle.js'))
       .pipe(gulp.dest('public/'));
 
@@ -62,7 +62,7 @@ function bundle() {
             console.error(err.message);
             console.error(err.codeFrame);
          })
-         .on('end', () => { console.log("Bundle completed in", (Date.now() - start), "ms.")})
+         .on('end', () => { console.log("Bundle completed in", (Date.now() - start), "ms at", new Date().toTimeString())})
          .pipe(source('bundle.js'))
          .pipe(gulp.dest('public/'));      
 }
