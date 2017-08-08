@@ -22,7 +22,7 @@ class SignIn extends React.Component {
          message = <div>Please sign in:</div>;
          form = 
             <div>
-               <input type='text' name="first" placeholder="first name" value={this.state.value} onChange={this.handleChange}/>
+               <input type='text' name="first" placeholder="first name" value={this.state.uname} onChange={this.handleChange}/>
                <input type='button' value='Sign In' onClick={() => this.props.onSignIn(this.state.uname)}/>
             </div>;
       }
