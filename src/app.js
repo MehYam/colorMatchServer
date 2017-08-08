@@ -10,6 +10,7 @@ const AdminPortal = require('./adminPortal');
 const Header = require('./header');
 const Home = require('./home');
 const SignIn = require('./signIn');
+const GamePortal = require('./gamePortal');
 
 const $ = require('jquery');
 
@@ -62,6 +63,7 @@ class App extends React.Component {
             <Header/>
             <Switch>
                <Route exact path='/' component={Home}/>
+               <Route path='/games' component={GamePortal}/>
                <Route path='/admin' component={AdminPortal}/>
                <Route path='*' component={NoMatch}/>
             </Switch>
@@ -69,6 +71,7 @@ class App extends React.Component {
       );
    }   
 }
+// how to send props down through routes:
 // <Route path='/signin' render={() => <SignIn onSignIn={this.onSignIn.bind(this)} onSignOut={this.onSignOut.bind(this)}/> } />
 
 ReactDOM.render(

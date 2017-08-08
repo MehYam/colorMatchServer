@@ -36,7 +36,7 @@ app.get('/api/admin/users/get', (req, res) => {
    if (req.query.firstName) {
       filter.firstName = req.query.firstName;
    }
-   database.collection(table).find(filter).toArray( (err, docs) => {
+   database.collection(dbUsers).find(filter).toArray( (err, docs) => {
       res.json(docs);
    });
 });
@@ -46,7 +46,7 @@ app.post('/api/admin/users/add', (req, res) =>
 
    let user = req.body;
 
-   database.collection(table).insertOne(user, (err, result) => {
+   database.collection(dbUsers).insertOne(user, (err, result) => {
 
       // KAI: error handling....
       // find the newly inserted row and send it back as the response
@@ -55,7 +55,7 @@ app.post('/api/admin/users/add', (req, res) =>
       }
       else {
          const newId = result.insertedId;
-         database.collection(table).find( {_id: newId} ).next( (err, doc) => {
+         database.collection(dbUsers).find( {_id: newId} ).next( (err, doc) => {
             res.json(doc);
          });
       }
@@ -69,7 +69,7 @@ app.post('/api/signin', (req, res) =>
 
    // don't pass the query in directly from the client, recompose it to be sure
    let query = {firstName: user.firstName};
-   database.collection(table).find(query).next( (err, doc) => {
+   database.collection(dbUsers).find(query).next( (err, doc) => {
 
       if (err || !doc) {
          console.error('user not found', user);
@@ -83,7 +83,6 @@ app.post('/api/signin', (req, res) =>
       }
    });
 });
-
 app.get('/api/signout', (req, res) =>
 {
    // not sure how to structure the session/signed-in state of the app, but implementing this is the next step in making it work
@@ -91,6 +90,39 @@ app.get('/api/signout', (req, res) =>
       req.colorMatchSession.reset();
    }
 });
+app.get('/api/createGame', (req, res) => 
+{
+});
+app.get('/api/getGames', (req, res) =>
+{
+   getUserDocFromRequest(req, 
+      (doc) => {
+         database.collection(dbGames).find().toArray( (err, docs) => {
+            res.json(docs);
+         });
+      },
+      (error) => {
+         console.error(error);
+         res.json([]);
+      }
+   );
+});
+
+function getUserDocFromRequest(req, success, error) {
+
+   if (req.colorMatchSession && req.colorMatchSession.user) {
+      const user = req.colorMatchSession.user;
+      const query = {firstName: user.firstName};
+      database.collection(dbUsers).find(query).next( (err, doc) => {
+         if (err || !doc) {
+            error('user not found ' + query);
+         }
+         else {
+            success(doc);
+         }
+      });
+   }
+}
 
 ///////////////////////////////////////////////
 const mongoClient = require('mongodb').MongoClient;
@@ -98,7 +130,8 @@ const ObjectId = require('mongodb').ObjectId;
 const mongoHost = 'mongodb://localhost:27017/cm1';
 const HTTPPort = 3000;
 var database = null;
-var table = 'dev';
+var dbUsers = 'dev';
+var dbGames = 'games';
 
 mongoClient.connect(mongoHost, (err, db) => {
    if (err) {

@@ -12,7 +12,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));  // was being used for jade, although that's removed
 
-//	KAI: left off here, following https://stormpath.com/blog/everything-you-ever-wanted-to-know-about-node-dot-js-sessions
 app.use(session(
 {
 	cookieName: 'session',

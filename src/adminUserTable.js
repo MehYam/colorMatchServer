@@ -17,8 +17,7 @@ class UserTable extends React.Component {
       return <UserRow key={user._id} user={user}/>;
    }
    render() {
-      var renderRowCapture = this.renderRow;
-      var userRows = this.props.users.map(renderRowCapture);
+      var userRows = this.props.users.map((user) => this.renderRow(user));
       return (
          <table>
             <thead>
