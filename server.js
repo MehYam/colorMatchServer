@@ -110,7 +110,9 @@ app.post('/api/createGame', (req, res) =>
    let gameRequest = req.body;
    getUserDocFromSession(req, 
       (doc) => {
-         const newGame = createGame([doc.firstName, gameRequest.opponent]);
+         const newGame = createGame([doc.firstName, gameRequest.opponent], gameSettings);
+
+         console.log('game created', newGame);
          database.collection(dbGames).insertOne(newGame, (err, result) => {
             if (err) {
                console.error('createGame failed', err);
@@ -180,21 +182,23 @@ mongoClient.connect(mongoHost, (err, db) => {
 });
 
 //////////////////////////////////////////////////
-function createGame(playerIds, width, height, playerPaletteSize, palette) {
+const seedrandom = require('seedrandom');
+function createGame(playerIds, settings) {
 
-   const totalPlayerColors = playerIds.length * playerPaletteSize;
+   const totalPlayerColors = playerIds.length * settings.playerPaletteSize;
 
-   console.assert(players && playerIds.length > 1, 'not enough players');
-   console.assert(totalPlayerColors <= (width * height), 'palette too small for board');
-   console.assert(totalPlayerColors <= palette.length, 'palette too small for players');
+   console.log("colors", totalPlayerColors, settings.width, 'x', settings.height);
+   console.assert(playerIds && playerIds.length > 1, 'not enough players');
+   console.assert(totalPlayerColors >= (settings.width * settings.height), 'palette too small for board');
+   console.assert(totalPlayerColors <= settings.palette.length, 'palette too small for players');
 
    // create a game representation for storage in the db
    Math.seedrandom();
    const newGame = 
    {
       seed: Math.random(),
-      width: width,
-      height: height,
+      width: settings.width,
+      height: settings.height,
 
       players: [],
       moves: []
@@ -210,26 +214,28 @@ function createGame(playerIds, width, height, playerPaletteSize, palette) {
          id: id,
          palette: []
       };
-      for (let i = 0; i < playerPaletteSize; ++i) {
+      for (let i = 0; i < settings.playerPaletteSize; ++i) {
 
          // choose a color, unique across both players
-         let colorIndex = Math.floor(Math.random() * palette.length);
-         while(colorsUsed.indexOf(palette[colorIndex]) === -1) {
+         let colorIndex = Math.floor(Math.random() * settings.palette.length);
+         while(colorsUsed.indexOf(settings.palette[colorIndex]) != -1) {
             ++colorIndex;
-            if (colorIndex >= palette.length) {
+            if (colorIndex >= settings.palette.length) {
                colorIndex = 0;
             }
          }
-         colorsUsed.push(palette[colorIndex]);
-
+         const color = settings.palette[colorIndex];
+         colorsUsed.push(color);
          player.palette.push(color);
       }
       return player;
    }
 
-   playersIds.forEach((id) => {
+   playerIds.forEach((id) => {
+      console.log('creating game for', id);
       newGame.players.push(addPlayer(id));
    })
+   console.log('done creating game');
    return newGame;
 }
 function doMove(game, x, y, colorIndex) {

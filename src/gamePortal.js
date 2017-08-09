@@ -5,12 +5,19 @@ const $ = require('jquery');
 const GameCreate = require('./gameCreate');
 
 class GameRow extends React.Component {
+   renderPlayerNames(game) {
+      let retval = '';
+      this.props.game.players.forEach((player) => {
+         retval += player.id;
+         retval += ' ';
+      });
+      return retval;
+   }
    render() {
       return (
          <tr>
-            <td>{this.props.game.player1}</td>
-            <td>{this.props.game.player2}</td>
-            <td>{String(this.props.game.pending)}</td>
+            <td>{this.renderPlayerNames(this.props.game)}</td>
+            <td>{this.props.game.moves.length}</td>
             <td>{this.props.game.seed}</td>
             <td>{this.props.game._id}</td>
          </tr>
@@ -28,9 +35,8 @@ class GameTable extends React.Component {
          <table>
             <thead>
                <tr>
-                  <th>Player 1</th>
-                  <th>Player 2</th>
-                  <th>Pending</th>
+                  <th>Players</th>
+                  <th># Moves</th>
                   <th>Seed</th>
                   <th>ID</th>
                </tr>
