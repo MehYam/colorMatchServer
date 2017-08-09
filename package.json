@@ -24,6 +24,7 @@
     "mongodb": "*",
     "react": "*",
     "react-dom": "*",
-    "react-router-dom": "*"
+    "react-router-dom": "*",
+    "seedrandom": "*"
   }
 }

@@ -94,20 +94,23 @@ app.get('/api/signout', (req, res) =>
    }
    res.sendStatus(200);
 });
+
+//KAI: this should come from the db, eventually
+const gameSettings = {
+   width: 3,
+   height: 3,
+   playerPaletteSize: 7
+};
+gameSettings.palette = require('./palette1').palette1;  
+
 app.post('/api/createGame', (req, res) => 
 {
    console.log('creating game');
 
    let gameRequest = req.body;
-   getUserDocFromRequest(req, 
+   getUserDocFromSession(req, 
       (doc) => {
-         const newGame = 
-         {
-            player1: doc.firstName,
-            player2: gameRequest.opponent,
-            pending: true,
-            seed: Math.random()
-         };
+         const newGame = createGame([doc.firstName, gameRequest.opponent]);
          database.collection(dbGames).insertOne(newGame, (err, result) => {
             if (err) {
                console.error('createGame failed', err);
@@ -126,7 +129,7 @@ app.post('/api/createGame', (req, res) =>
 });
 app.get('/api/getGames', (req, res) =>
 {
-   getUserDocFromRequest(req, 
+   getUserDocFromSession(req, 
       (doc) => {
          database.collection(dbGames).find().toArray( (err, docs) => {
             res.json(docs);
@@ -139,7 +142,7 @@ app.get('/api/getGames', (req, res) =>
    );
 });
 
-function getUserDocFromRequest(req, success, error) {
+function getUserDocFromSession(req, success, error) {
 
    if (req.colorMatchSession && req.colorMatchSession.user) {
       const user = req.colorMatchSession.user;
@@ -161,7 +164,7 @@ const ObjectId = require('mongodb').ObjectId;
 const mongoHost = 'mongodb://localhost:27017/cm1';
 const HTTPPort = 3000;
 
-var database = null;
+let database = null;
 const dbUsers = 'users';
 const dbGames = 'games';
 
@@ -175,3 +178,71 @@ mongoClient.connect(mongoHost, (err, db) => {
 
    app.listen(HTTPPort, () => console.log('ColorMatch server listening on port ' + HTTPPort));
 });
+
+//////////////////////////////////////////////////
+function createGame(playerIds, width, height, playerPaletteSize, palette) {
+
+   const totalPlayerColors = playerIds.length * playerPaletteSize;
+
+   console.assert(players && playerIds.length > 1, 'not enough players');
+   console.assert(totalPlayerColors <= (width * height), 'palette too small for board');
+   console.assert(totalPlayerColors <= palette.length, 'palette too small for players');
+
+   // create a game representation for storage in the db
+   Math.seedrandom();
+   const newGame = 
+   {
+      seed: Math.random(),
+      width: width,
+      height: height,
+
+      players: [],
+      moves: []
+   };
+
+   Math.seedrandom(newGame.seed);
+
+   // fill out the player states, including randomized palettes
+   const colorsUsed = [];
+
+   function addPlayer(id) {
+      const player = {
+         id: id,
+         palette: []
+      };
+      for (let i = 0; i < playerPaletteSize; ++i) {
+
+         // choose a color, unique across both players
+         let colorIndex = Math.floor(Math.random() * palette.length);
+         while(colorsUsed.indexOf(palette[colorIndex]) === -1) {
+            ++colorIndex;
+            if (colorIndex >= palette.length) {
+               colorIndex = 0;
+            }
+         }
+         colorsUsed.push(palette[colorIndex]);
+
+         player.palette.push(color);
+      }
+      return player;
+   }
+
+   playersIds.forEach((id) => {
+      newGame.players.push(addPlayer(id));
+   })
+   return newGame;
+}
+function doMove(game, x, y, colorIndex) {
+
+   // validate space left on the board
+   const boardSize = game.width * game.height;
+   if (game.moves.length >= boardsize) {
+      console.error('move error - too many moves for this board');
+      return;
+   }
+
+   const currentPlayer = game.moves.length % game.players.length;
+
+   // make sure the color 
+
+}
