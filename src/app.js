@@ -11,6 +11,7 @@ const Header = require('./header');
 const Home = require('./home');
 const SignIn = require('./signIn');
 const GamePortal = require('./gamePortal');
+const Game = require('./game');
 
 const $ = require('jquery');
 
@@ -67,7 +68,8 @@ class App extends React.Component {
             <Header/>
             <Switch>
                <Route exact path='/' component={Home}/>
-               <Route path='/games' component={GamePortal}/>
+               <Route exact path='/games' component={GamePortal}/>
+               <Route path='/games/:gameid' component={Game}/>
                <Route path='/admin' component={AdminPortal}/>
                <Route path='*' component={NoMatch}/>
             </Switch>

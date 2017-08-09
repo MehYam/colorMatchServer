@@ -1,5 +1,6 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
+const Link = require('react-router-dom').Link;
 const $ = require('jquery');
 
 const GameCreate = require('./gameCreate');
@@ -19,7 +20,7 @@ class GameRow extends React.Component {
             <td>{this.renderPlayerNames(this.props.game)}</td>
             <td>{this.props.game.moves.length}</td>
             <td>{this.props.game.seed}</td>
-            <td>{this.props.game._id}</td>
+            <td><Link to={`/games/${this.props.game._id}`}>{this.props.game._id}</Link></td>
          </tr>
       );
    }
@@ -77,6 +78,9 @@ class GamePortal extends React.Component {
             console.error('error creating game:', err, status);
          }
       });
+   }
+   onPlayGame(gameId) {
+
    }
    render() {
       return (
