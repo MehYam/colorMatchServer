@@ -129,6 +129,9 @@ app.post('/api/createGame', (req, res) =>
       }
    );
 });
+app.post('/api/doMove', (req, res) => {
+   
+})
 app.get('/api/getGames', (req, res) =>
 {
    getUserDocFromSession(req, 

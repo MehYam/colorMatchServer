@@ -62,7 +62,6 @@ class GameBoard extends React.Component {
       }
 
       // populate the grid from the list of moves
-      console.log('moves', game.moves.length);
       for (let i = 0; i < game.moves.length; ++i) {
          const playerIdx = i % game.players.length;
          const move = game.moves[i];
@@ -98,6 +97,7 @@ class Game extends React.Component {
          moves: []
       };
       this.state = { game: gameTemplate };
+      this.ourId = localStorage.user1;  // KAI: hack, pass the current user ID through the routes, instead.  Check to see how many render()'s happen
    }
    componentDidMount() {
       this.loadGame(this.props.match.params.gameid);
@@ -119,13 +119,19 @@ class Game extends React.Component {
       });
    }
    render() {
+      let players = this.state.game.players.slice();
+      console.assert(players.length == 2, 'we can only currently render exactly two players');
+
+      if (players[0].id == this.ourId) {
+         players.reverse();
+      }
       return (
          <div>
             <h1>This is game board {this.props.match.params.gameid}</h1>
-            <Palette player={this.state.game.players[1]} label='(Opponent)' tileSize={60}/>
+            <Palette player={players[0]} label='(Other player)' tileSize={60}/>
             <br/>
             <GameBoard game={this.state.game} tileSize={120}/>
-            <Palette player={this.state.game.players[0]} label='(Me)' tileSize={60}/>
+            <Palette player={players[1]} label='(You)' tileSize={60}/>
          </div>
       );
    }

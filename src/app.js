@@ -69,8 +69,8 @@ class App extends React.Component {
             <Switch>
                <Route exact path='/' component={Home}/>
                <Route exact path='/games' component={GamePortal}/>
-               <Route path='/games/:gameid' component={Game}/>
                <Route path='/admin' component={AdminPortal}/>
+               <Route path='/games/:gameid' component={Game}/>
                <Route path='*' component={NoMatch}/>
             </Switch>
          </div>
