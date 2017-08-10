@@ -66,6 +66,7 @@ class App extends React.Component {
          <div>
             <SignIn signedInStatus={this.state.signedInStatus} onSignIn={this.onSignIn.bind(this)} onSignOut={this.onSignOut.bind(this)}/>
             <Header/>
+            <hr/>
             <Switch>
                <Route exact path='/' component={Home}/>
                <Route exact path='/games' component={GamePortal}/>
