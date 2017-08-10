@@ -143,6 +143,24 @@ app.get('/api/getGames', (req, res) =>
       }
    );
 });
+app.post('/api/getGame', (req, res) =>
+{
+   //KAI: authenticate the call - make sure 1) the user can make calls at all, and 2) has access to this particular game
+   const gameId = req.body;
+
+   console.log('getGame', gameId, gameId.gameId);
+   database.collection(dbGames).find( {_id: ObjectId(gameId.gameId)} ).next( (err, doc) => {
+
+      if (err || !doc) {
+         console.error('could not locate game', gameId.id, err);
+         res.status(500).json({});
+      }
+      else {
+         console.log('found game', doc);
+         res.json(doc);
+      }
+   });
+});
 
 function getUserDocFromSession(req, success, error) {
 
