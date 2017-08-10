@@ -3,33 +3,81 @@ const ReactDOM = require('react-dom');
 const $ = require('jquery');
 
 class PaletteTile extends React.Component {
+   constructor() {
+      super();
+   }
+   onClick() {
+      console.log('clicked', this.props.color);
+   }
    render() {
-      return (<span>{String(this.props.color)}</span>);
+      const styleF = {
+         backgroundColor: '#' + this.props.color.toString(16),
+         width: this.props.size,
+         height: this.props.size
+      };
+      return (<div className='paletteTile' style={styleF} onClick={() => this.onClick()}></div>);
    }
 }
 class Palette extends React.Component {
    render() {
-      const tiles = this.props.player.palette.map((color) => <PaletteTile key={color} color={color}/>);
+      const tiles = this.props.player.palette.map((color) => <PaletteTile key={color} color={color} size={this.props.tileSize}/>);
       return (
-         <div>
-            <h2>user: {this.props.player.id}</h2>
+         <div className='palette'>
+            <h2>{this.props.player.id} - {this.props.label}</h2>
             {tiles}
+            <div className='clear'/>
          </div>
       );
    }
 }
+// KAI: is this the same thing as Palette, really?
 class GameBoardRow extends React.Component {
+   renderTile(color) {
+      return <PaletteTilex key={color} color={color} size={this.props.tileSize}/>;
+   }
    render() {
-      return <div>GameBoardRow</div>;
+      //KAI: there's some difference between new Array() and [] that makes the following lines not work
+      //const tiles = this.props.row.map((color) => <PaletteTilex key={color} color={color} size={this.props.tileSize}/>);
+      //const tiles = [ <PaletteTilex color={0xff0000} size={20}/> ];
+      const tiles = [];
+      for (let c = 0; c < this.props.row.length; ++c) {
+         tiles.push(<PaletteTile key={c} color={this.props.row[c] || 0} size={this.props.tileSize}/>);
+      }
+      console.log('GameBoardRow.render', tiles.length, 'tiles');
+      return (
+         <div className='palette'>
+            {tiles}
+            <div className='clear'/>
+         </div>
+      );
    }
 }
 class GameBoard extends React.Component {
-   constructor() {
-      super();
-      this.state = {};
-   }
    renderRows() {
-      return <GameBoardRow/>;
+
+      // the game state is a minimal representation;  pad it out to make rendering easier
+      const game = this.props.game;
+      const rows = new Array(game.height);
+      for (let r = 0; r < rows.length; ++r) {
+         rows[r] = new Array(game.width);
+      }
+
+      // populate the grid from the list of moves
+      for (let i = 0; i < game.moves.length; ++i) {
+         const playerIdx = i % game.players.length;
+         const move = game.moves[i];
+
+         rows[move.y][move.x] = game.players[playerIdx].palette[move.paletteIdx];
+      }
+
+      //const rowComponents = rows.map((row) => <GameBoardRow row={row} tileSize={this.props.tileSize}/>);  ......need unique keys
+      const rowComponents = [];
+      for (let r = 0; r < rows.length; ++r) {
+         const row = rows[r];
+         rowComponents.push(<GameBoardRow key={r} row={row} tileSize={this.props.tileSize}/>);
+      }
+      console.log('size', rows.length, rows[0].length);
+      return rowComponents;
    }
    render() {
       return <div>{this.renderRows()}</div>;
@@ -39,7 +87,7 @@ class Game extends React.Component {
    constructor() {
       super();
 
-      //KAI: this state should be loaded somewhere, before we render the component - we shouldn't need gameTemplate
+      //KAI: this state should be loaded before we render anything at all.  Need a loading screen here and everywhere else
       const gameTemplate = {
          seed: 'a seed',
          width: 3,
@@ -74,10 +122,11 @@ class Game extends React.Component {
    render() {
       return (
          <div>
-            <h1>This is the game board {this.props.match.params.gameid}</h1>
-            <Palette player={this.state.game.players[1]}/>
-            <GameBoard game={this.state.game}/>
-            <Palette player={this.state.game.players[0]}/>
+            <h1>This is game board {this.props.match.params.gameid}</h1>
+            <Palette player={this.state.game.players[1]} label='(Opponent)' tileSize={60}/>
+            <br/>
+            <GameBoard game={this.state.game} tileSize={120}/>
+            <Palette player={this.state.game.players[0]} label='(Me)' tileSize={60}/>
          </div>
       );
    }
