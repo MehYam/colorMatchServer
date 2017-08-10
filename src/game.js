@@ -43,7 +43,6 @@ class GameBoardRow extends React.Component {
       for (let c = 0; c < this.props.row.length; ++c) {
          tiles.push(<PaletteTile key={c} color={this.props.row[c] || 0} size={this.props.tileSize}/>);
       }
-      console.log('GameBoardRow.render', tiles.length, 'tiles');
       return (
          <div className='palette'>
             {tiles}
@@ -63,6 +62,7 @@ class GameBoard extends React.Component {
       }
 
       // populate the grid from the list of moves
+      console.log('moves', game.moves.length);
       for (let i = 0; i < game.moves.length; ++i) {
          const playerIdx = i % game.players.length;
          const move = game.moves[i];
@@ -76,7 +76,6 @@ class GameBoard extends React.Component {
          const row = rows[r];
          rowComponents.push(<GameBoardRow key={r} row={row} tileSize={this.props.tileSize}/>);
       }
-      console.log('size', rows.length, rows[0].length);
       return rowComponents;
    }
    render() {
