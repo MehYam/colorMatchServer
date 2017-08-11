@@ -9,12 +9,13 @@ class PaletteTile extends React.Component {
          width: this.props.size,
          height: this.props.size
       };
-      return (<div className='paletteTile' style={styleF} onClick={this.props.onClick}></div>);
+      const clickHandler = this.props.onClick ? (() => this.props.onClick(this.props.id)) : null;
+      return (<div className='paletteTile' style={styleF} onClick={clickHandler}></div>);
    }
 }
 class Palette extends React.Component {
    render() {
-      const tiles = this.props.player.palette.map((color) => <PaletteTile key={color} color={color} size={this.props.tileSize} onClick={this.props.onTileClick}/>);
+      const tiles = this.props.player.palette.map((color) => <PaletteTile key={color} color={color} id={color} size={this.props.tileSize} onClick={this.props.onTileClick}/>);
       return (
          <div className='palette'>
             <h2>{this.props.player.id} - {this.props.label}</h2>
@@ -35,7 +36,8 @@ class GameBoardRow extends React.Component {
       //const tiles = [ <PaletteTilex color={0xff0000} size={20}/> ];
       const tiles = [];
       for (let c = 0; c < this.props.row.length; ++c) {
-         tiles.push(<PaletteTile key={c} color={this.props.row[c] || 0} size={this.props.tileSize} onClick={this.props.onTileClick}/>);
+         const tileId = {row: this.props.rowIndex, col: c};
+         tiles.push(<PaletteTile key={c} color={this.props.row[c] || 0} id={tileId} size={this.props.tileSize} onClick={this.props.onTileClick}/>);
       }
       return (
          <div className='palette'>
@@ -67,7 +69,7 @@ class GameBoard extends React.Component {
       const rowComponents = [];
       for (let r = 0; r < rows.length; ++r) {
          const row = rows[r];
-         rowComponents.push(<GameBoardRow key={r} row={row} tileSize={this.props.tileSize} onTileClick={this.props.onTileClick}/>);
+         rowComponents.push(<GameBoardRow key={r} row={row} rowIndex={r} tileSize={this.props.tileSize} onTileClick={this.props.onTileClick}/>);
       }
       return rowComponents;
    }
@@ -91,7 +93,6 @@ class Game extends React.Component {
          moves: []
       };
       this.state = { game: gameTemplate };
-      this.ourId = localStorage.user1;  // KAI: hack, pass the current user ID through the routes, instead.  Check to see how many render()'s happen
 
       this.onPaletteTileClick = this.onPaletteTileClick.bind(this);
       this.onGameBoardTileClick = this.onGameBoardTileClick.bind(this);
@@ -115,18 +116,49 @@ class Game extends React.Component {
          }
       });
    }
+   doMove(move) {
+      console.log('doMove', move);
+      $.ajax({
+         url: '/api/doMove',
+         type: 'POST',
+         contentType: 'application/json',
+         data: JSON.stringify(move),
+         success: () => console.log('done move'),
+         error: (xhr, status, err) => console.error('doMove failed')
+      });     
+   }
+   get ourId() {
+      return localStorage.user1; // KAI: hack, pass the current user ID through the routes, instead.  Check to see how many render()'s happen
+   }
+   get ourPlayer() {
+      const players = this.state.game.players;
+      return players[0].id == this.ourId ? players[0] : players[1];
+   }
    onPaletteTileClick(color) {
-      console.log('onPaletteTileClick', color);
+      console.log('onPaletteTileClick', '#' + color.toString(16));
 
       // check that color isn't used. If it isn't, set as current color
       //KAI: this should probably be set in state to do things the React way?
+      this.selectedPaletteColor = color;
    }
    onGameBoardTileClick(location) {
-      console.log('onGameBoardTileClick', location);
+      console.log('onGameBoardTileClick', location, this.selectedPaletteColor);
 
+      console.log('whut?', location.col, location.row);
+      
       // if there's a color selected, tell the server that we're making this move, and re-render the board
+      if (this.selectedPaletteColor) {
+         const ourPlayer = this.ourPlayer;
+         this.doMove({
+            gameId: this.props.match.params.gameid,
+            x: location.col,
+            y: location.row,
+            paletteIdx: ourPlayer.palette.indexOf(this.selectedPaletteColor)
+         });
+      }
    }
    render() {
+      // what index player are we?
       let players = this.state.game.players.slice();
       console.assert(players.length == 2, 'we can only currently render exactly two players');
 
@@ -134,6 +166,7 @@ class Game extends React.Component {
          players.reverse();
       }
 
+      // whose turn is it?
       const whoseTurn = this.state.game.moves.length % this.state.game.players.length;
       const ourTurn = whoseTurn == this.state.game.players.findIndex((player) => player.id == this.ourId);
 

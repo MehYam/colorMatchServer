@@ -129,9 +129,6 @@ app.post('/api/createGame', (req, res) =>
       }
    );
 });
-app.post('/api/doMove', (req, res) => {
-   
-})
 app.get('/api/getGames', (req, res) =>
 {
    getUserDocFromSession(req, 
@@ -164,6 +161,53 @@ app.post('/api/getGame', (req, res) =>
       }
    });
 });
+app.post('/api/doMove', (req, res) => 
+{
+   const move = req.body;
+
+   getUserDocFromSession(req, 
+      (doc) => {
+         database.collection(dbGames).find( {_id: ObjectId(move.gameId)} ).next( (err, game) => {
+            if (err || !game) {
+               console.error('could not locate game', move.gameId, err);
+               res.status(500).json({'error': 'game not found'});
+            }
+            else {
+               // retrieve the game, attempt the move.  doMove() returns false for invalid moves, although an untampered-with client
+               // should never generate one
+               //doMove(game, player, x, y, paletteIndex)
+               if (doMove(game, doc.firstName, move.x, move.y, move.paletteIdx)) {
+
+                  console.log('doMove successful');
+
+                  // client will reload to see new game state
+                  saveGame(game);
+                  res.json({});
+
+                  //KAI: set a notification on all the other players
+
+                  //KAI: check if the game is complete, if so either mark it as such, or move to other table
+               }
+               else {
+                  res.status(500).json({'error': 'invalid move'});
+               }
+            }
+         });
+      },
+      (error) => {
+         console.error(error);
+         res.status(500).json({});
+      }
+   );
+});
+
+function saveGame(game) {
+   //KAI: this may fail, need to handle it
+   database.collection(dbGames).updateOne({ _id: ObjectId(game._id) }, game, (err, result) => {
+
+      console.log('game saved - we should send it directly back to the client, race condition here...');
+   });
+}
 
 function getUserDocFromSession(req, success, error) {
 
@@ -238,14 +282,14 @@ function createGame(playerIds, settings) {
       for (let i = 0; i < settings.playerPaletteSize; ++i) {
 
          // choose a color, unique across both players
-         let colorIndex = Math.floor(Math.random() * settings.palette.length);
-         while(colorsUsed.indexOf(settings.palette[colorIndex]) != -1) {
-            ++colorIndex;
-            if (colorIndex >= settings.palette.length) {
-               colorIndex = 0;
+         let colorIdx = Math.floor(Math.random() * settings.palette.length);
+         while(colorsUsed.indexOf(settings.palette[colorIdx]) != -1) {
+            ++colorIdx;
+            if (colorIdx >= settings.palette.length) {
+               colorIdx = 0;
             }
          }
-         const color = settings.palette[colorIndex];
+         const color = settings.palette[colorIdx];
          colorsUsed.push(color);
          player.palette.push(color);
       }
@@ -259,17 +303,49 @@ function createGame(playerIds, settings) {
    console.log('done creating game');
    return newGame;
 }
-function doMove(game, x, y, colorIndex) {
+function clamp(number, min, max) {
+   return Math.max(Math.min(number, max), min);
+}
+// return 'true' if the move could be made, 'false' if it fails validation
+function doMove(game, playerId, x, y, paletteIdx) {
+
+//KAI: these must all be tested
+   console.log('doMove', game);
 
    // validate space left on the board
    const boardSize = game.width * game.height;
-   if (game.moves.length >= boardsize) {
-      console.error('move error - too many moves for this board');
-      return;
+   if (game.moves.length >= boardSize) {
+      console.error('doMove error - more moves than board spaces');
+      return false;
    }
 
-   const currentPlayer = game.moves.length % game.players.length;
+   // validate player making their own moves
+   const currentPlayerIdx = game.moves.length % game.players.length;
+   const currentPlayer = game.players[currentPlayerIdx];
+   if (currentPlayer.id != playerId) {
+      console.error('doMove error - wrong player');
+      return false;
+   }
 
-   // make sure the color 
+   // validate board space is unused
+   if (game.moves.find((move) => move.x == x && move.y == y)) {
+      console.error('doMove error - board space non-empty');
+      return false;
+   }
 
+   // check that the color is unused - KAI: this is screwed up, only every other move is this players
+   paletteIdx = clamp(paletteIdx, 0, currentPlayer.palette.length - 1);
+   if (game.moves.find((move) => move.player == currentPlayer.id && move.paletteIdx == paletteIdx)) {
+      console.error('doMove error - color already used');
+      return false;
+   }
+
+   // this move looks good.  Apply it
+   game.moves.push({ 
+      player: currentPlayer.id,
+      x: x,
+      y: y,
+      paletteIdx: paletteIdx
+   });
+   return true;
 }
