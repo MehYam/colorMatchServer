@@ -10,7 +10,7 @@ class PaletteTile extends React.Component {
          height: this.props.size
       };
       const clickHandler = this.props.onClick ? (() => this.props.onClick(this.props.id)) : null;
-      return (<div className='paletteTile' style={styleF} onClick={clickHandler}></div>);
+      return (<div className='paletteTile2' style={styleF} onClick={clickHandler}></div>);
    }
 }
 class Palette extends React.Component {
@@ -74,7 +74,7 @@ class GameBoard extends React.Component {
       return rowComponents;
    }
    render() {
-      return <div>{this.renderRows()}</div>;
+      return <div class='centerChild'>{this.renderRows()}</div>;
    }
 }
 class Game extends React.Component {
@@ -145,7 +145,7 @@ class Game extends React.Component {
       console.log('onGameBoardTileClick', location, this.selectedPaletteColor);
 
       console.log('whut?', location.col, location.row);
-      
+
       // if there's a color selected, tell the server that we're making this move, and re-render the board
       if (this.selectedPaletteColor) {
          const ourPlayer = this.ourPlayer;
@@ -179,12 +179,14 @@ class Game extends React.Component {
          otherLabel += ' <= THEIR TURN, awaiting move...';
       }
       return (
-         <div>
+         <div className='centerParent'>
+         <div className='centerChild'>
             <Palette player={players[0]} label={otherLabel} tileSize={60}/>
             <br/>
-            <GameBoard game={this.state.game} tileSize={120} onTileClick={this.onGameBoardTileClick}/>
+            <GameBoard game={this.state.game} tileSize={142} onTileClick={this.onGameBoardTileClick}/>
             <Palette player={players[1]} label={ourLabel} tileSize={60} onTileClick={this.onPaletteTileClick}/>
             <div>Game <b>{this.props.match.params.gameid}</b></div>
+         </div>
          </div>
       );
    }
