@@ -4,8 +4,12 @@ const $ = require('jquery');
 
 class PaletteTile extends React.Component {
    render() {
+      const color = this.props.color || 0xffffff;
+      const colorHexPad = '000000';
+      const colorHex = (colorHexPad + color.toString(16)).slice(-colorHexPad.length);
+
       const styleF = {
-         backgroundColor: '#' + this.props.color.toString(16),
+         backgroundColor: '#' + colorHex,
          width: this.props.size,
          height: this.props.size
       };
