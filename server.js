@@ -181,8 +181,7 @@ app.post('/api/doMove', (req, res) =>
                   console.log('doMove successful');
 
                   // client will reload to see new game state
-                  saveGame(game);
-                  res.json({});
+                  saveGame(game, res);
 
                   //KAI: set a notification on all the other players
 
@@ -201,11 +200,18 @@ app.post('/api/doMove', (req, res) =>
    );
 });
 
-function saveGame(game) {
+function saveGame(game, res) {
    //KAI: this may fail, need to handle it
    database.collection(dbGames).updateOne({ _id: ObjectId(game._id) }, game, (err, result) => {
 
-      console.log('game saved - we should send it directly back to the client, race condition here...');
+      if (err) {
+         console.log('error in saveGame', result);
+         res.status(500).json({'error': 'move not saved'});
+      }
+      else {
+         res.json(game);
+         console.log('game saved');
+      }
    });
 }
 

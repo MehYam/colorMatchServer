@@ -74,7 +74,7 @@ class GameBoard extends React.Component {
       return rowComponents;
    }
    render() {
-      return <div class='centerChild'>{this.renderRows()}</div>;
+      return <div className='centerChild'>{this.renderRows()}</div>;
    }
 }
 class Game extends React.Component {
@@ -123,7 +123,9 @@ class Game extends React.Component {
          type: 'POST',
          contentType: 'application/json',
          data: JSON.stringify(move),
-         success: () => console.log('done move'),
+         success: function(game) {
+            this.setState({game: game});
+         }.bind(this),
          error: (xhr, status, err) => console.error('doMove failed')
       });     
    }
