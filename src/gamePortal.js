@@ -13,7 +13,7 @@ class GameRow extends React.Component {
    render() {
       const game = this.props.game;
 
-      const pct = (game.votes && game.chances) ? (game.votes/game.chances) : '-';
+      const pct = (game.votes && game.elections) ? (game.votes/game.elections) : '-';
       const votes = game.votes || '-';
       return (
          <tr>
@@ -41,7 +41,7 @@ class GameTable extends React.Component {
                   <th>Players</th>
                   <th># Moves</th>
                   <th># Votes</th>
-                  <th>Vote Rate</th>
+                  <th>Score (0-1)</th>
                   <th>Seed</th>
                   <th>ID</th>
                </tr>

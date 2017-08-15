@@ -5,14 +5,14 @@ const $ = require('jquery');
 const GameBoard = require('./gameBoard');
 const Utils = require('./utils');
 
-class VoteEntry extends React.Component {
+class VoteCandidate extends React.Component {
    render() {
       return (
-         <div className='voteEntry'>
+         <div className='voteCandidate'>
             <div>
                <GameBoard game={this.props.game} tileSize={60}/>
                <br/>
-               <input className='centerChild' type='button' value='Vote!'/>
+               <input className='centerChild' type='button' value='Vote!' onClick={this.props.onVote}/>
             </div>
          </div>
       );
@@ -25,9 +25,9 @@ class Voting extends React.Component {
       this.state = {games: []};
    }
    componentDidMount() {
-      this.loadGames();
+      this.loadCandidates();
    }
-   loadGames() {
+   loadCandidates() {
       console.log("loading vote candidates");
       $.ajax({
          url: '/api/getVoting',
@@ -40,12 +40,22 @@ class Voting extends React.Component {
          error: (xhr, status, err) => console.error('getVoting failed', err)
       });
    }
+   onVote(gameId) {
+      console.log('voting for', gameId);
+
+      // tell server
+
+      // KAI: kill buttons to prevent double voting
+
+      // load new candidates
+      this.loadCandidates();
+   }
    renderCandidates() {
       const candidates = [];
       let key = 0;
       this.state.games.forEach((game) =>
       {
-         candidates.push(<VoteEntry game={game} key={game._id}/>)
+         candidates.push(<VoteCandidate game={game} key={game._id} onVote={() => this.onVote(game._id)}/>)
       });
       return candidates;
    }

@@ -151,7 +151,7 @@ app.post('/api/getGame', (req, res) =>
    database.collection(dbGames).find( {_id: ObjectId(gameId.gameId)} ).next( (err, doc) => {
 
       if (err || !doc) {
-         console.error('could not locate game', gameId.id, err);
+         console.error('could not locate game', gameId.gameId, err);
          res.status(500).json({});
       }
       else {
@@ -179,8 +179,47 @@ app.get('/api/getVoting', (req, res) =>
          });
       },
       (error) => {
-         console.error('tried to vote without signing in')
+         console.error('tried to get votes without signing in')
          res.status(500).json([]);
+      }
+   );
+});
+app.post('/api/doVote', (req, res) =>
+{
+   getUserDocFromSession(req,
+      (user) => {
+         if (err || !user) {
+            console.error('doVote error', err);
+            res.status(500).json([]);
+         }
+         else {
+            // retrieve the game, ensure that it's votable
+            const gameId = req.body;
+
+            database.collection(dbGames).find( {_id: ObjectId(gameId.gameId)} ).next( (err, game) => {
+
+               if (err || !game || !game.complete) {
+                  console.error('doVote could not locate completed game', gameId.gameId, err);
+                  res.status(500).json({});
+               }
+               else {
+                  game.votes = game.votes ? (game.votes + 1) : 1;  //KAI: can simplify this
+
+                  // update votes
+                  database.collection(dbGames).updateOne({ _id: ObjectId(game._id) }, game);
+
+                  // update user vote count
+                  user.votesCast = user.votesCast ? (user.votesCast + 1) : 1;
+                  database.collection(dbUsers).updateOne({ _id: ObjectId(user._id) }, user);
+
+                  res.sendStatus(200);
+               }
+            });
+         }
+      },
+      (error) => {
+         console.error('tried to doVote without signing in')
+         res.status(500).json({});
       }
    );
 });
@@ -227,9 +266,6 @@ app.post('/api/doMove', (req, res) =>
 const MOVE_COMPLETED_GAMES = false;
 function saveGame(game, res) {
 
-   const completed = (game.width * game.height) == game.moves.length;
-   const dbName = completed ? dbGamesCompleted : dbGames;
-
    const saveHandler = (err, result) => {
       if (err) {
          console.log('error in saveGame', err, result);
@@ -241,15 +277,17 @@ function saveGame(game, res) {
       }
    }
 
-   if (MOVE_COMPLETED_GAMES && completed) {
+   game.complete = (game.width * game.height) == game.moves.length;
+
+   database.collection(dbGames).updateOne({ _id: ObjectId(game._id) }, game, saveHandler);
+
+   if (game.complete && MOVE_COMPLETED_GAMES) {
+      //KAI: technically, we shouldn't do the update to the game right before this if we're just going to delete it,
+      // but I think this logic will never be used anyway
       console.log('saveGame completed, moving game to other collection');
 
       database.collection(dbGamesCompleted).insertOne(game, saveHandler);
       database.collection(dbGames).deleteOne({ _id: ObjectId(game._id) });
-   }
-   else {
-      game.complete = true;
-      database.collection(dbGames).updateOne({ _id: ObjectId(game._id) }, game, saveHandler);
    }
 }
 
