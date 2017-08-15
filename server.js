@@ -17,7 +17,6 @@ app.use(session({
 
 app.use((req, res, next) => {
    if (req.colorMatchSession && req.colorMatchSession.user) {
-
       console.log('found colorMatchSession user cookie', req.colorMatchSession.user);
    }
    else {
@@ -200,19 +199,33 @@ app.post('/api/doMove', (req, res) =>
    );
 });
 
+const MOVE_COMPLETED_GAMES = false;
 function saveGame(game, res) {
-   //KAI: this may fail, need to handle it
-   database.collection(dbGames).updateOne({ _id: ObjectId(game._id) }, game, (err, result) => {
 
+   const completed = (game.width * game.height) == game.moves.length;
+   const dbName = completed ? dbGamesCompleted : dbGames;
+
+   const saveHandler = (err, result) => {
       if (err) {
-         console.log('error in saveGame', result);
+         console.log('error in saveGame', err, result);
          res.status(500).json({'error': 'move not saved'});
       }
       else {
          res.json(game);
          console.log('game saved');
       }
-   });
+   }
+
+   if (MOVE_COMPLETED_GAMES && completed) {
+      console.log('saveGame completed, moving game to other collection');
+
+      database.collection(dbGamesCompleted).insertOne(game, saveHandler);
+      database.collection(dbGames).deleteOne({ _id: ObjectId(game._id) });
+   }
+   else {
+      game.complete = true;
+      database.collection(dbGames).updateOne({ _id: ObjectId(game._id) }, game, saveHandler);
+   }
 }
 
 function getUserDocFromSession(req, success, error) {
@@ -240,6 +253,7 @@ const HTTPPort = 3000;
 let database = null;
 const dbUsers = 'users';
 const dbGames = 'games';
+const dbGamesCompleted = 'gamesCompleted';
 
 mongoClient.connect(mongoHost, (err, db) => {
    if (err) {
