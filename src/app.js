@@ -66,8 +66,6 @@ class App extends React.Component {
       return (
          <div>
             <Header/>
-            <SignIn signedInStatus={this.state.signedInStatus} onSignIn={this.onSignIn.bind(this)} onSignOut={this.onSignOut.bind(this)}/>
-            <hr/>
             <Switch>
                <Route exact path='/' component={Home}/>
                <Route exact path='/games' component={GamePortal}/>
@@ -76,6 +74,8 @@ class App extends React.Component {
                <Route path='/games/:gameid' component={Game}/>
                <Route path='*' component={NoMatch}/>
             </Switch>
+            <hr/>
+            <SignIn signedInStatus={this.state.signedInStatus} onSignIn={this.onSignIn.bind(this)} onSignOut={this.onSignOut.bind(this)}/>
          </div>
       );
    }   
