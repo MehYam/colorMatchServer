@@ -28,8 +28,27 @@ class Game extends React.Component {
 
       this.onPaletteTileClick = this.onPaletteTileClick.bind(this);
       this.onGameBoardTileClick = this.onGameBoardTileClick.bind(this);
+      this.onTimer = this.onTimer.bind(this);
    }
    componentDidMount() {
+      this.loadGame(this.props.match.params.gameid);
+   }
+   componentWillUnmount() {
+      this.endReloadTimer();
+   }
+   checkReloadTimer() {
+      this.endReloadTimer();
+      if (!this.gameComplete && !this.ourTurn && !this.reloadInterval) {
+         this.reloadInterval = setInterval(this.onTimer, 3000);
+      }
+   }
+   endReloadTimer() {
+      clearInterval(this.reloadInterval);
+      this.reloadInterval = 0;
+   }
+   onTimer() {
+//() => this.loadGame(this.props.match.params.gameid)
+      console.log('Game.onTimer - KAI: this needs to be dialed back');
       this.loadGame(this.props.match.params.gameid);
    }
    loadGame(gameId) {
@@ -41,6 +60,7 @@ class Game extends React.Component {
          data: JSON.stringify({gameId: gameId}),
          success: function(game) {
             this.setState({game: game});
+            this.checkReloadTimer();
          }.bind(this),
          error: (xhr, status, err) =>
          {
@@ -57,6 +77,7 @@ class Game extends React.Component {
          data: JSON.stringify(move),
          success: function(game) {
             this.setState({game: game});
+            this.checkReloadTimer();
          }.bind(this),
          error: (xhr, status, err) => console.error('doMove failed', err)
       });     
@@ -67,6 +88,17 @@ class Game extends React.Component {
    get ourPlayer() {
       const players = this.state.game.players;
       return players[0].id == this.ourId ? players[0] : players[1];
+   }
+   get ourTurn() {
+      if (!this.gameComplete) {
+         const whoseTurn = this.state.game.moves.length % this.state.game.players.length;
+         const ourTurn = whoseTurn == this.state.game.players.findIndex((player) => player.id == this.ourId);
+         return ourTurn;
+      }
+      return false;
+   }
+   get gameComplete() {
+      return this.state.game.moves.length >= (this.state.game.width * this.state.game.height);
    }
    onPaletteTileClick(color) {
       console.log('onPaletteTileClick', '#' + color.toString(16));
@@ -79,8 +111,6 @@ class Game extends React.Component {
       //KAI: disable these when the game's done (after server robustness testing)
       console.log('onGameBoardTileClick', location, this.selectedPaletteColor);
 
-      console.log('whut?', location.col, location.row);
-
       // if there's a color selected, tell the server that we're making this move, and re-render the board
       if (this.selectedPaletteColor) {
          const ourPlayer = this.ourPlayer;
@@ -91,9 +121,6 @@ class Game extends React.Component {
             paletteIdx: ourPlayer.palette.indexOf(this.selectedPaletteColor)
          });
       }
-   }
-   get gameComplete() {
-      return this.state.game.moves.length >= (this.state.game.width * this.state.game.height);
    }
    renderCompletionMessage() {
       return this.gameComplete ? <h2>Game Complete</h2> : null;
@@ -115,14 +142,10 @@ class Game extends React.Component {
          players.reverse();
       }
 
-      // whose turn is it?
-      const whoseTurn = this.state.game.moves.length % this.state.game.players.length;
-      const ourTurn = whoseTurn == this.state.game.players.findIndex((player) => player.id == this.ourId);
-
       let otherLabel = '(Other player)';
       let ourLabel = '(You)';
       if (!this.gameComplete) {
-         if (ourTurn) {
+         if (this.ourTurn) {
             ourLabel += ' <= YOUR TURN, please place a color';
          }
          else {
