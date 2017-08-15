@@ -44,8 +44,15 @@ class Voting extends React.Component {
       console.log('voting for', gameId);
 
       // tell server
+      $.ajax({
+         url: '/api/doVote',
+         type: 'POST',
+         contentType: 'application/json',
+         data: JSON.stringify({gameId: gameId}),
+         error: (xhr, status, err) => console.error('doVote error', err)
+      })
 
-      // KAI: kill buttons to prevent double voting
+      // KAI: disable/nuke buttons to prevent double voting
 
       // load new candidates
       this.loadCandidates();

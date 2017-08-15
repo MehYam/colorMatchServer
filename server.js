@@ -173,8 +173,14 @@ app.get('/api/getVoting', (req, res) =>
             else {
                console.log('getVoting found', docs.length);
 
-               const retval = shuffle(docs).slice(0, 3);
-               res.json(retval);
+               const candidates = shuffle(docs).slice(0, 3);
+
+               // add one view count to each of these games
+               candidates.forEach((game) => {
+                  game.elections = game.elections ? (game.elections + 1) : 1;
+                  database.collection(dbGames).updateOne({ _id: ObjectId(game._id) }, game);
+               });
+               res.json(candidates);
             }
          });
       },
@@ -188,34 +194,28 @@ app.post('/api/doVote', (req, res) =>
 {
    getUserDocFromSession(req,
       (user) => {
-         if (err || !user) {
-            console.error('doVote error', err);
-            res.status(500).json([]);
-         }
-         else {
-            // retrieve the game, ensure that it's votable
-            const gameId = req.body;
+         // retrieve the game, ensure that it's votable
+         const gameId = req.body;
 
-            database.collection(dbGames).find( {_id: ObjectId(gameId.gameId)} ).next( (err, game) => {
+         database.collection(dbGames).find( {_id: ObjectId(gameId.gameId)} ).next( (err, game) => {
 
-               if (err || !game || !game.complete) {
-                  console.error('doVote could not locate completed game', gameId.gameId, err);
-                  res.status(500).json({});
-               }
-               else {
-                  game.votes = game.votes ? (game.votes + 1) : 1;  //KAI: can simplify this
+            if (err || !game || !game.complete) {
+               console.error('doVote could not locate completed game', gameId.gameId, err);
+               res.status(500).json({});
+            }
+            else {
+               game.votes = game.votes ? (game.votes + 1) : 1;  //KAI: can simplify this
 
-                  // update votes
-                  database.collection(dbGames).updateOne({ _id: ObjectId(game._id) }, game);
+               // update votes
+               database.collection(dbGames).updateOne({ _id: ObjectId(game._id) }, game);
 
-                  // update user vote count
-                  user.votesCast = user.votesCast ? (user.votesCast + 1) : 1;
-                  database.collection(dbUsers).updateOne({ _id: ObjectId(user._id) }, user);
+               // update user vote count
+               user.votesCast = user.votesCast ? (user.votesCast + 1) : 1;
+               database.collection(dbUsers).updateOne({ _id: ObjectId(user._id) }, user);
 
-                  res.sendStatus(200);
-               }
-            });
-         }
+               res.sendStatus(200);
+            }
+         });
       },
       (error) => {
          console.error('tried to doVote without signing in')

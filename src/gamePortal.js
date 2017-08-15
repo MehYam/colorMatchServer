@@ -13,13 +13,15 @@ class GameRow extends React.Component {
    render() {
       const game = this.props.game;
 
-      const pct = (game.votes && game.elections) ? (game.votes/game.elections) : '-';
-      const votes = game.votes || '-';
+      const votesNumeric = game.votes || 0;
+      const votesLabel = game.elections ? votesNumeric : '-';
+      const pct = game.elections ? (votesNumeric/game.elections).toFixed(5) : '-';
+
       return (
          <tr>
             <td>{this.renderPlayerNames(game)}</td>
             <td className='numericColumn'>{game.moves.length}</td>
-            <td className='numericColumn'>{votes}</td>
+            <td className='numericColumn'>{votesLabel}</td>
             <td className='numericColumn'>{pct}</td>
             <td>{this.props.game.seed}</td>
             <td><Link to={`/games/${this.props.game._id}`}>{this.props.game._id}</Link></td>
@@ -41,7 +43,7 @@ class GameTable extends React.Component {
                   <th>Players</th>
                   <th># Moves</th>
                   <th># Votes</th>
-                  <th>Score (0-1)</th>
+                  <th>Winrate (0-1)</th>
                   <th>Seed</th>
                   <th>ID</th>
                </tr>
