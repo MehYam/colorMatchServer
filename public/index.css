@@ -45,6 +45,10 @@ div.paletteTile2:hover {
 .float {
   float: left;
 }
+.voteEntry {
+  float: left;
+  padding: 20px;
+}
 
 /* taken from https://www.w3schools.com/css/css_table.asp*/
 table {

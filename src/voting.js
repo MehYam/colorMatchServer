@@ -7,7 +7,15 @@ const Utils = require('./utils');
 
 class VoteEntry extends React.Component {
    render() {
-
+      return (
+         <div className='voteEntry'>
+            <div>
+               <GameBoard game={this.props.game} tileSize={60}/>
+               <br/>
+               <input className='centerChild' type='button' value='Vote!'/>
+            </div>
+         </div>
+      );
    }
 }
 class Voting extends React.Component {
@@ -37,7 +45,7 @@ class Voting extends React.Component {
       let key = 0;
       this.state.games.forEach((game) =>
       {
-         candidates.push(<div className='float' key={++key}><GameBoard game={game}/></div>);
+         candidates.push(<VoteEntry game={game} key={game._id}/>)
       });
       return candidates;
    }
