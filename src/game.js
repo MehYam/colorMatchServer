@@ -7,12 +7,12 @@ const GameBoard = require('./gameBoard');
 
 class Palette extends React.Component {
    render() {
-      const tiles = this.props.player.palette.map((color) => <PaletteTile key={color} color={color} id={color} size={this.props.tileSize} onClick={this.props.onTileClick}/>);
+      const tiles = this.props.colors.map((color) => <PaletteTile key={color} color={color} id={color} size={this.props.tileSize} onClick={this.props.onTileClick}/>);
       return (
          <div className='centerChild'>
             {tiles}
-            <h3>{this.props.player.id} - {this.props.label}</h3>
             <div className='clear'/>
+            <h3>{this.props.playerLabel} - {this.props.label}</h3>
          </div>
       );
    }
@@ -106,6 +106,14 @@ class Game extends React.Component {
    renderCompletionMessage() {
       return this.gameComplete ? <h2>Game Complete</h2> : null;
    }
+   getPlayerUnusedColors(player, moves) {
+      // this is wacky because of the zealously minimal way we're storing board state
+      const playerMoves = moves.filter((move) => move.player == player.id);
+      const playerMoveColors = playerMoves.map((playerMove) => player.palette[playerMove.paletteIdx]);
+      const unusedColors = player.palette.filter((color) => -1 == playerMoveColors.indexOf(color));
+
+      return unusedColors;
+   }
    render() {
       // what index player are we?
       let players = this.state.game.players.slice();
@@ -133,9 +141,10 @@ class Game extends React.Component {
          <div className='centerParent'>
             <div className='centerChild'>
                {this.renderCompletionMessage()}
-               <Palette player={players[0]} label={otherLabel} tileSize={60}/>
+               <Palette colors={this.getPlayerUnusedColors(players[0], this.state.game.moves)} playerLabel={players[0].id} label={otherLabel} tileSize={60}/>
                <GameBoard game={this.state.game} tileSize={142} onTileClick={this.onGameBoardTileClick}/>
-               <Palette player={players[1]} label={ourLabel} tileSize={60} onTileClick={this.onPaletteTileClick}/>
+               <br/>
+               <Palette colors={this.getPlayerUnusedColors(players[1], this.state.game.moves)} playerLabel={players[1].id} label={ourLabel} tileSize={60} onTileClick={this.onPaletteTileClick}/>
                <div>Game <b>{this.props.match.params.gameid}</b></div>
             </div>
          </div>
