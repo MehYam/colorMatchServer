@@ -160,6 +160,31 @@ app.post('/api/getGame', (req, res) =>
       }
    });
 });
+app.get('/api/getVoting', (req, res) =>
+{
+   getUserDocFromSession(req,
+      (doc) => {
+         database.collection(dbGames).find({complete: true}).toArray( (err, docs) => {
+
+            if (err || !doc) {
+               console.error('getVoting error', err);
+               res.status(500).json([]);
+            }
+            else {
+               console.log('getVoting found', docs.length);
+
+               const retval = shuffle(docs).slice(0, 3);
+               res.json(retval);
+            }
+         });
+      },
+      (error) => {
+         console.error('tried to vote without signing in')
+         res.status(500).json([]);
+      }
+   );
+});
+
 app.post('/api/doMove', (req, res) => 
 {
    const move = req.body;
@@ -368,4 +393,14 @@ function doMove(game, playerId, x, y, paletteIdx) {
       paletteIdx: paletteIdx
    });
    return true;
+}
+function shuffle(array) {
+   const retval = array.slice();
+   for (let i = 0; i < retval.length; ++i) {
+      const iRnd = Math.floor(Math.random() * retval.length);
+      const tmp = retval[i];
+      retval[i] = retval[iRnd];
+      retval[iRnd] = tmp;
+   }
+   return retval;
 }

@@ -58,7 +58,7 @@ class Game extends React.Component {
          success: function(game) {
             this.setState({game: game});
          }.bind(this),
-         error: (xhr, status, err) => console.error('doMove failed')
+         error: (xhr, status, err) => console.error('doMove failed', err)
       });     
    }
    get ourId() {
