@@ -5,6 +5,8 @@ const $ = require('jquery');
 const PaletteTile = require('./paletteTile');
 const GameBoard = require('./gameBoard');
 
+const Utils = require('./utils');
+
 class Palette extends React.Component {
    render() {
       const tiles = this.props.colors.map((color) => <PaletteTile key={color} color={color} id={color} size={this.props.tileSize} onClick={this.props.onTileClick}/>);
@@ -22,17 +24,7 @@ class Game extends React.Component {
       super();
 
       //KAI: this state should be loaded before we render anything at all.  Need a loading screen here and everywhere else
-      const gameTemplate = {
-         seed: 'a seed',
-         width: 3,
-         height: 3,
-         players: [
-            {id: 0, palette: []},
-            {id: 1, palette: []}
-         ],
-         moves: []
-      };
-      this.state = { game: gameTemplate };
+      this.state = { game: Utils.gameTemplate };
 
       this.onPaletteTileClick = this.onPaletteTileClick.bind(this);
       this.onGameBoardTileClick = this.onGameBoardTileClick.bind(this);
@@ -139,6 +131,7 @@ class Game extends React.Component {
       }
       return (
          <div className='centerParent'>
+            <hr/>
             <div className='centerChild'>
                {this.renderCompletionMessage()}
                <Palette colors={this.getPlayerUnusedColors(players[0], this.state.game.moves)} playerLabel={players[0].id} label={otherLabel} tileSize={60}/>

@@ -11,10 +11,16 @@ class GameRow extends React.Component {
       return ids.join(', ');
    }
    render() {
+      const game = this.props.game;
+
+      const pct = (game.votes && game.chances) ? (game.votes/game.chances) : '-';
+      const votes = game.votes || '-';
       return (
          <tr>
-            <td>{this.renderPlayerNames(this.props.game)}</td>
-            <td className='numericColumn'>{this.props.game.moves.length}</td>
+            <td>{this.renderPlayerNames(game)}</td>
+            <td className='numericColumn'>{game.moves.length}</td>
+            <td className='numericColumn'>{votes}</td>
+            <td className='numericColumn'>{pct}</td>
             <td>{this.props.game.seed}</td>
             <td><Link to={`/games/${this.props.game._id}`}>{this.props.game._id}</Link></td>
          </tr>
@@ -34,6 +40,8 @@ class GameTable extends React.Component {
                <tr>
                   <th>Players</th>
                   <th># Moves</th>
+                  <th># Votes</th>
+                  <th>Vote Rate</th>
                   <th>Seed</th>
                   <th>ID</th>
                </tr>
@@ -78,8 +86,8 @@ class GamePortal extends React.Component {
    render() {
       return (
          <div>
-            <GameCreate onClick={(opponent) => this.onCreateGame(opponent)}/>
             <h1>Games ({this.state.games.length})</h1>
+            <GameCreate onClick={(opponent) => this.onCreateGame(opponent)}/>
             <h4>Click the right column link to view/play game</h4>
             <GameTable games={this.state.games}/>
          </div>

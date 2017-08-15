@@ -1,9 +1,21 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 
+const GameBoard = require('./gameBoard');
+
 class Voting extends React.Component {
+   componentDidMount() {
+
+   }
    render() {
-      return <h1>Voting is coming soon!</h1>;
+      return (
+         <div>
+            <div className='float'><GameBoard/></div>
+            <div className='float'><GameBoard/></div>
+            <div className='float'><GameBoard/></div>
+            <div className='clear'></div>
+         </div>
+      );
    }
 }
 
