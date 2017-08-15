@@ -12,11 +12,12 @@ const Home = require('./home');
 const SignIn = require('./signIn');
 const GamePortal = require('./gamePortal');
 const Game = require('./game');
+const Voting = require('./voting');
 
 const $ = require('jquery');
 
 class NoMatch extends React.Component {
-   render() { return <h2>Page not found</h2>; }
+   render() { return <h2>Page under construction!</h2>; }
 }
 
 class App extends React.Component {
@@ -71,6 +72,7 @@ class App extends React.Component {
                <Route exact path='/' component={Home}/>
                <Route exact path='/games' component={GamePortal}/>
                <Route path='/admin' component={AdminPortal}/>
+               <Route path='/voting' component={Voting}/>
                <Route path='/games/:gameid' component={Game}/>
                <Route path='*' component={NoMatch}/>
             </Switch>

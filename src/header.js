@@ -9,6 +9,7 @@ class Header extends React.Component {
                <ul>
                   <li><Link to='/'>Home</Link></li>
                   <li><Link to='/games'>Games</Link></li>
+                  <li><Link to='/voting'>Voting</Link></li>
                   <li><Link to='/admin'>User Admin</Link></li>
                </ul>
             </nav>

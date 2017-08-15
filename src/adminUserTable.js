@@ -7,7 +7,7 @@ function UserRow(props)
         <tr>
             <td>{props.user.firstName}</td>
             <td>{props.user.lastName}</td>
-            <td>{props.user._id}</td>
+            <td className='numericColumn'>{props.user._id}</td>
         </tr>
     );
 }

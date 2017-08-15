@@ -14,7 +14,7 @@ class GameRow extends React.Component {
       return (
          <tr>
             <td>{this.renderPlayerNames(this.props.game)}</td>
-            <td>{this.props.game.moves.length}</td>
+            <td className='numericColumn'>{this.props.game.moves.length}</td>
             <td>{this.props.game.seed}</td>
             <td><Link to={`/games/${this.props.game._id}`}>{this.props.game._id}</Link></td>
          </tr>
