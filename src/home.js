@@ -4,7 +4,7 @@ const ReactDOM = require('react-dom');
 class Home extends React.Component {
    render() {
       return (
-         <div>This is the home component</div>
+         <div className='centerParent'><h1 className='centerChild'>ColorMatch Development Prototype</h1></div>
       );
    }
 }

@@ -7,12 +7,8 @@ const GameCreate = require('./gameCreate');
 
 class GameRow extends React.Component {
    renderPlayerNames(game) {
-      let retval = '';
-      this.props.game.players.forEach((player) => {
-         retval += player.id;
-         retval += ' ';
-      });
-      return retval;
+      var ids = this.props.game.players.map((player) => player.id);
+      return ids.join(', ');
    }
    render() {
       return (
@@ -79,15 +75,12 @@ class GamePortal extends React.Component {
          }
       });
    }
-   onPlayGame(gameId) {
-
-   }
    render() {
       return (
          <div>
-            <h1>Games</h1>
             <GameCreate onClick={(opponent) => this.onCreateGame(opponent)}/>
-            <div>Games: {this.state.games.length}</div>
+            <h1>Games ({this.state.games.length})</h1>
+            <h4>Click the right column link to view/play game</h4>
             <GameTable games={this.state.games}/>
          </div>
       );

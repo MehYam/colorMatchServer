@@ -15,11 +15,11 @@ class SignIn extends React.Component {
       let message = null;
       let form = null;
       if (this.props.signedInStatus) {
-         message = <div>Signed in as: <b>{this.props.signedInStatus}</b></div>
+         message = <span>Signed in as: <b>{this.props.signedInStatus}</b>...</span>
          form = <input type='button' value='Sign Out' onClick={this.props.onSignOut}/>
       }
       else {
-         message = <div>Please sign in:</div>;
+         message = <span>Please sign in:</span>;
          form = 
             <div>
                <input type='text' name="first" placeholder="first name" value={this.state.uname} onChange={this.handleChange}/>

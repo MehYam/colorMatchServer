@@ -46,12 +46,12 @@ class AdminPortal extends React.Component
    {
       return (
         <div>
-            <h1>User Admin Portal</h1>
+            <h1>User List</h1>
             <UserTable users={this.state.users}/>
             <hr/>
-            <UserFilter onSubmit={(filter) => this.loadUsers(filter)} firstName={this.props.location.query}/>
-            <hr/>
             <UserAdd onSubmit={(u) => this.addUser(u)}/>
+            <hr/>
+            <UserFilter onSubmit={(filter) => this.loadUsers(filter)} firstName={this.props.location.query}/>
         </div>
       );
    }

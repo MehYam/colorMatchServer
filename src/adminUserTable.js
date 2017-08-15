@@ -5,8 +5,8 @@ function UserRow(props)
 {
     return (
         <tr>
-            <td>{props.user.lastName}</td>
             <td>{props.user.firstName}</td>
+            <td>{props.user.lastName}</td>
             <td>{props.user._id}</td>
         </tr>
     );
@@ -22,8 +22,8 @@ class UserTable extends React.Component {
          <table>
             <thead>
             <tr>
-               <th>Last</th>
                <th>First</th>
+               <th>Last</th>
                <th>ID</th>
             </tr>
             </thead>

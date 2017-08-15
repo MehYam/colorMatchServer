@@ -64,8 +64,8 @@ class App extends React.Component {
    render() {
       return (
          <div>
-            <SignIn signedInStatus={this.state.signedInStatus} onSignIn={this.onSignIn.bind(this)} onSignOut={this.onSignOut.bind(this)}/>
             <Header/>
+            <SignIn signedInStatus={this.state.signedInStatus} onSignIn={this.onSignIn.bind(this)} onSignOut={this.onSignOut.bind(this)}/>
             <hr/>
             <Switch>
                <Route exact path='/' component={Home}/>

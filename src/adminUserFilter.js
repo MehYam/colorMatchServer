@@ -9,6 +9,7 @@ class UserFilter extends React.Component {
 
       this.state = {value: initialFilter};
       this.handleSubmit = this.handleSubmit.bind(this);
+      this.handleChange = this.handleChange.bind(this);
    }
    handleSubmit(e) {
       e.preventDefault();
@@ -26,7 +27,7 @@ class UserFilter extends React.Component {
          <div>
             <form name="userFilter" onSubmit={this.handleSubmit}>
                <input type="text" name="first" placeholder="first name" value={this.state.value} onChange={this.handleChange}/>
-               <input type="submit" value="Apply Filter"/>
+               <input type="submit" value="Find User"/>
             </form>
          </div>
       );
