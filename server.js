@@ -7,7 +7,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(session({
    cookieName: 'colorMatchSession',
-//KAI: load this from a local non-repo file
+//KAI: load this from a local non-repo file once we're out of prototyping
    secret: 'steve_rockwell_is_jouko_salomaa_dev_1',
    duration: 7 * 24 * 60 * 60 * 1000,
    httpOnly: true,
@@ -310,13 +310,16 @@ function getUserDocFromSession(req, success, error) {
 ///////////////////////////////////////////////
 const mongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
-const mongoHost = 'mongodb://localhost:27017/cm1';
 const HTTPPort = 3000;
 
 let database = null;
 const dbUsers = 'users';
 const dbGames = 'games';
 const dbGamesCompleted = 'gamesCompleted';
+
+const mongoHost = process.env.MONGOLAB_URI || 'mongodb://localhost:27017/cm1';
+
+console.log('connecting to MongoDB at', mongoHost);
 
 mongoClient.connect(mongoHost, (err, db) => {
    if (err) {
