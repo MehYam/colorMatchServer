@@ -310,7 +310,7 @@ function getUserDocFromSession(req, success, error) {
 ///////////////////////////////////////////////
 const mongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
-const HTTPPort = 3000;
+const HTTPPort = process.env.PORT || 3000;
 
 let database = null;
 const dbUsers = 'users';
